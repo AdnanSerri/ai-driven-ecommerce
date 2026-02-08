@@ -1,0 +1,35 @@
+categories:
+  get:
+    tags:
+      - Categories
+    summary: List all categories
+    description: Get a list of all parent categories with their children
+    operationId: listCategories
+    responses:
+      '200':
+        description: Successful response
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '../components/schemas.yml#/CategoryWithChildren'
+            example:
+              data:
+                - id: 1
+                  name: Electronics
+                  children:
+                    - id: 2
+                      name: Phones
+                    - id: 3
+                      name: Laptops
+                - id: 4
+                  name: Clothing
+                  children:
+                    - id: 5
+                      name: Men
+                    - id: 6
+                      name: Women

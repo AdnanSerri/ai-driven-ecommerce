@@ -1,0 +1,238 @@
+# User Schemas
+User:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 1
+    name:
+      type: string
+      example: John Doe
+    email:
+      type: string
+      format: email
+      example: john@example.com
+
+# Category Schemas
+Category:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 1
+    name:
+      type: string
+      example: Electronics
+
+CategoryWithChildren:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 1
+    name:
+      type: string
+      example: Electronics
+    children:
+      type: array
+      items:
+        $ref: '#/Category'
+
+# Product Schemas
+ProductBasic:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 1
+    name:
+      type: string
+      example: Wireless Bluetooth Headphones
+    price:
+      type: string
+      example: "99.99"
+    image_url:
+      type: string
+      nullable: true
+      example: https://example.com/images/headphones.jpg
+
+ProductList:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 1
+    name:
+      type: string
+      example: Wireless Bluetooth Headphones
+    description:
+      type: string
+      example: High-quality wireless headphones with noise cancellation
+    price:
+      type: string
+      example: "99.99"
+    image_url:
+      type: string
+      nullable: true
+      example: https://example.com/images/headphones.jpg
+    category:
+      $ref: '#/Category'
+    created_at:
+      type: string
+      format: date-time
+      example: "2024-01-15T10:30:00.000000Z"
+
+ProductDetail:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 1
+    name:
+      type: string
+      example: Wireless Bluetooth Headphones
+    description:
+      type: string
+      example: High-quality wireless headphones with noise cancellation
+    price:
+      type: string
+      example: "99.99"
+    image_url:
+      type: string
+      nullable: true
+      example: https://example.com/images/headphones.jpg
+    category:
+      $ref: '#/Category'
+    reviews:
+      type: array
+      items:
+        $ref: '#/ReviewWithUser'
+    created_at:
+      type: string
+      format: date-time
+      example: "2024-01-15T10:30:00.000000Z"
+
+# Purchase Schemas
+Purchase:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 1
+    quantity:
+      type: integer
+      example: 2
+    total_price:
+      type: string
+      example: "199.98"
+    purchased_at:
+      type: string
+      format: date-time
+      example: "2024-01-15T10:30:00.000000Z"
+
+PurchaseWithProduct:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 1
+    quantity:
+      type: integer
+      example: 2
+    total_price:
+      type: string
+      example: "199.98"
+    purchased_at:
+      type: string
+      format: date-time
+      example: "2024-01-15T10:30:00.000000Z"
+    product:
+      $ref: '#/ProductBasic'
+
+# Review Schemas
+Review:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 1
+    rating:
+      type: integer
+      minimum: 1
+      maximum: 5
+      example: 5
+    comment:
+      type: string
+      example: This is an excellent product, highly recommended!
+    created_at:
+      type: string
+      format: date-time
+      example: "2024-01-15T10:30:00.000000Z"
+
+ReviewWithProduct:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 1
+    rating:
+      type: integer
+      minimum: 1
+      maximum: 5
+      example: 5
+    comment:
+      type: string
+      example: This is an excellent product, highly recommended!
+    created_at:
+      type: string
+      format: date-time
+      example: "2024-01-15T10:30:00.000000Z"
+    product:
+      $ref: '#/ProductBasic'
+
+ReviewWithUser:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 1
+    rating:
+      type: integer
+      minimum: 1
+      maximum: 5
+      example: 5
+    comment:
+      type: string
+      example: This is an excellent product, highly recommended!
+    created_at:
+      type: string
+      format: date-time
+      example: "2024-01-15T10:30:00.000000Z"
+    user:
+      $ref: '#/User'
+
+# Error Schemas
+ValidationErrorDetail:
+  type: object
+  properties:
+    message:
+      type: string
+      example: The given data was invalid.
+    errors:
+      type: object
+      additionalProperties:
+        type: array
+        items:
+          type: string
+      example:
+        email:
+          - The email field is required.
+        password:
+          - The password must be at least 8 characters.
+
+Error:
+  type: object
+  properties:
+    message:
+      type: string
+      example: An error occurred

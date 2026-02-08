@@ -1,0 +1,84 @@
+# ==========================================================================
+# Laravel Backend - FrankenPHP + Octane (Production-like)
+# ==========================================================================
+#
+# DATABASES ARE IN: ../infrastructure/docker-compose.yml
+#
+# Start infrastructure first:
+#   cd ../infrastructure && docker-compose up -d
+#
+# Then start this:
+#   docker-compose up -d --build
+#
+# For development with hot reload, use:
+#   docker-compose -f docker-compose.dev.yml up -d --build
+#
+# View logs:
+#   docker-compose logs -f app
+# ==========================================================================
+
+services:
+  # ==========================================================================
+  # Laravel App - FrankenPHP + Octane (High Performance)
+  # ==========================================================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: backend-frankenphp
+    restart: unless-stopped
+    ports:
+      - "8002:8002"
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      # Docker networking - use container names from infrastructure
+      DB_HOST: infra-postgres
+      DB_PORT: 5432
+      DB_DATABASE: backend
+      DB_USERNAME: postgres
+      DB_PASSWORD: secret
+      REDIS_HOST: infra-redis
+      REDIS_PORT: 6379
+      KAFKA_BROKERS: infra-kafka:9092
+      ML_SERVICE_URL: http://host.docker.internal:8001
+      # Octane settings
+      OCTANE_SERVER: frankenphp
+    networks:
+      - project2_network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/up"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # ==========================================================================
+  # Queue Worker - For background jobs (uses same image)
+  # ==========================================================================
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: backend-queue
+    restart: unless-stopped
+    environment:
+      APP_ENV: production
+      DB_HOST: infra-postgres
+      REDIS_HOST: infra-redis
+      KAFKA_BROKERS: infra-kafka:9092
+    command: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--max-time=3600"]
+    depends_on:
+      - app
+    networks:
+      - project2_network
+
+# ==========================================================================
+# Shared network with infrastructure
+# ==========================================================================
+networks:
+  project2_network:
+    external: true
+    name: project2_network

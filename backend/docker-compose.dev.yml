@@ -1,0 +1,93 @@
+# ==========================================================================
+# Laravel Backend - FrankenPHP + Octane (Development)
+# ==========================================================================
+#
+# Start infrastructure first:
+#   cd ../infrastructure && docker-compose up -d
+#
+# Then start this (development mode with hot reload):
+#   docker-compose -f docker-compose.dev.yml up -d --build
+#
+# View logs:
+#   docker-compose -f docker-compose.dev.yml logs -f app
+#
+# Rebuild after composer.json changes:
+#   docker-compose -f docker-compose.dev.yml up -d --build
+# ==========================================================================
+
+services:
+  # ==========================================================================
+  # Laravel App - FrankenPHP + Octane (Development with Watch)
+  # ==========================================================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: backend-frankenphp-dev
+    restart: unless-stopped
+    ports:
+      - "8002:8002"
+      - "5173:5173"  # Vite HMR
+    volumes:
+      # Mount source directories for hot reload (but NOT vendor)
+      - ./app:/app/app
+      - ./bootstrap:/app/bootstrap
+      - ./config:/app/config
+      - ./database:/app/database
+      - ./public:/app/public
+      - ./resources:/app/resources
+      - ./routes:/app/routes
+      - ./storage:/app/storage
+      - ./.env:/app/.env
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      # Docker networking overrides
+      DB_HOST: infra-postgres
+      DB_PORT: 5432
+      REDIS_HOST: infra-redis
+      REDIS_PORT: 6379
+      KAFKA_BROKERS: infra-kafka:9092
+      ML_SERVICE_URL: http://host.docker.internal:8001
+      # Octane settings
+      OCTANE_SERVER: frankenphp
+    networks:
+      - project2_network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # ==========================================================================
+  # Queue Worker - For background jobs
+  # ==========================================================================
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: backend-queue-dev
+    restart: unless-stopped
+    volumes:
+      - ./app:/app/app
+      - ./bootstrap:/app/bootstrap
+      - ./config:/app/config
+      - ./database:/app/database
+      - ./routes:/app/routes
+      - ./storage:/app/storage
+      - ./.env:/app/.env
+    environment:
+      APP_ENV: local
+      DB_HOST: infra-postgres
+      REDIS_HOST: infra-redis
+      KAFKA_BROKERS: infra-kafka:9092
+    command: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3"]
+    depends_on:
+      - app
+    networks:
+      - project2_network
+
+# ==========================================================================
+# Use the shared infrastructure network
+# ==========================================================================
+networks:
+  project2_network:
+    external: true
+    name: project2_network

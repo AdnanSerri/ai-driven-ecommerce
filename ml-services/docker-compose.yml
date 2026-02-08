@@ -1,0 +1,72 @@
+# ==========================================================================
+# ML Services - Docker Compose
+# ==========================================================================
+#
+# DATABASES ARE IN: ../infrastructure/docker-compose.yml
+#
+# To start all databases:
+#   cd ../infrastructure && docker-compose up -d
+#
+# To run ML service locally (recommended for development):
+#   uvicorn main:app --reload --port 8000
+#
+# To run ML service in Docker (optional):
+#   docker-compose up -d
+# ==========================================================================
+
+services:
+  # ==========================================================================
+  # ML Service Application (optional - can run locally with uvicorn instead)
+  # ==========================================================================
+  ml-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ml-service
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      # PostgreSQL (infrastructure)
+      POSTGRES_HOST: infra-postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: backend
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret
+      # MongoDB (infrastructure)
+      MONGO_URI: mongodb://infra-mongodb:27017
+      MONGO_DB: ml_service
+      # Redis (infrastructure)
+      REDIS_URL: redis://infra-redis:6379/0
+      # Weaviate (infrastructure)
+      WEAVIATE_URL: http://infra-weaviate:8080
+      WEAVIATE_GRPC_PORT: 50051
+      # App settings
+      APP_HOST: 0.0.0.0
+      APP_PORT: 8000
+      DEBUG: "true"
+      SERVICE_AUTH_TOKEN: dev-token-change-in-production
+    volumes:
+      - .:/app
+      - ml_models_cache:/root/.cache  # Cache HuggingFace models
+    depends_on:
+      - ml-service-init
+    networks:
+      - project2_network
+
+  # Dummy init service to ensure network exists
+  ml-service-init:
+    image: busybox
+    container_name: ml-service-init
+    command: echo "ML Service ready to connect to infrastructure"
+    networks:
+      - project2_network
+
+volumes:
+  ml_models_cache:
+    driver: local
+
+networks:
+  project2_network:
+    external: true
+    name: project2_network

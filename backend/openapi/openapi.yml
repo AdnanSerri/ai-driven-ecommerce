@@ -1,0 +1,59 @@
+openapi: 3.0.3
+info:
+  title: Backend API
+  description: Laravel Backend API for Products, Purchases, and Reviews
+  version: 1.0.0
+  contact:
+    name: API Support
+
+servers:
+  - url: http://localhost:8000/api
+    description: Local development server
+
+tags:
+  - name: Authentication
+    description: User authentication endpoints
+  - name: Products
+    description: Product catalog endpoints
+  - name: Categories
+    description: Product category endpoints
+  - name: Purchases
+    description: User purchase endpoints
+  - name: Reviews
+    description: Product review endpoints
+
+paths:
+  /register:
+    $ref: './paths/auth.yml#/register'
+  /login:
+    $ref: './paths/auth.yml#/login'
+  /logout:
+    $ref: './paths/auth.yml#/logout'
+  /products:
+    $ref: './paths/products.yml#/products'
+  /products/{id}:
+    $ref: './paths/products.yml#/product'
+  /categories:
+    $ref: './paths/categories.yml#/categories'
+  /user/purchases:
+    $ref: './paths/purchases.yml#/userPurchases'
+  /purchases:
+    $ref: './paths/purchases.yml#/purchases'
+  /user/reviews:
+    $ref: './paths/reviews.yml#/userReviews'
+  /reviews:
+    $ref: './paths/reviews.yml#/reviews'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Sanctum API Token
+
+  schemas:
+    $ref: './components/schemas.yml'
+
+  responses:
+    $ref: './components/responses.yml'

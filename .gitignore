@@ -1,0 +1,72 @@
+# === Dependencies ===
+node_modules/
+vendor/
+.venv/
+
+# === Environment files ===
+.env
+.env.*
+!.env.example
+
+# === Build outputs ===
+.next/
+out/
+build/
+dist/
+coverage/
+
+# === Generated files ===
+nestjs-backend/generated/
+*.tsbuildinfo
+next-env.d.ts
+
+# === IDE ===
+.idea/
+.vscode/
+.fleet/
+.nova/
+.zed/
+
+# === OS ===
+.DS_Store
+Thumbs.db
+nul
+
+# === Logs ===
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# === PHP ===
+.phpactor.json
+.phpunit.result.cache
+.phpunit.cache
+storage/*.key
+storage/pail
+public/build
+public/hot
+public/storage
+Homestead.json
+Homestead.yaml
+**/caddy
+frankenphp
+frankenphp-worker.php
+auth.json
+
+# === Python ===
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# === Keys/certs ===
+*.pem
+
+# === Misc ===
+.vercel
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions

@@ -1,0 +1,51 @@
+# ==========================================================================
+# Laravel Backend - FrankenPHP + Octane (Development)
+# ==========================================================================
+# Development version with hot reload support
+#
+# Usage:
+#   docker-compose -f docker-compose.dev.yml up -d --build
+# ==========================================================================
+
+FROM dunglas/frankenphp:latest-php8.3-alpine
+
+# Install PHP extensions required by Laravel
+RUN install-php-extensions \
+    pcntl \
+    pdo_pgsql \
+    pgsql \
+    redis \
+    intl \
+    zip \
+    bcmath \
+    opcache \
+    gd
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Install Node.js for Vite (dev only)
+RUN apk add --no-cache nodejs npm
+
+# Set working directory
+WORKDIR /app
+
+# Copy composer files and install dependencies
+COPY composer.json composer.lock ./
+RUN composer install --no-scripts --no-autoloader --prefer-dist
+
+# Copy the rest of the application
+COPY . .
+
+# Generate autoloader
+RUN composer dump-autoload --optimize
+
+# Set permissions
+RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache \
+    && chmod -R 775 /app/storage /app/bootstrap/cache
+
+# Expose Octane port (8002) and Vite port (5173)
+EXPOSE 8002 5173
+
+# Start Octane with watch mode for development
+CMD ["php", "artisan", "octane:start", "--server=frankenphp", "--host=0.0.0.0", "--port=8002", "--watch"]
