@@ -70,3 +70,12 @@ __pycache__/
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
+
+CLAUDE.md
+DEVELOPMENT_PROGRESS.md
+EVALUATION.md
+FILTER_TRACKING.md
+ISSUES.md
+nul
+RECOMMENDATION_ENHANCEMENT_PLAN.md
+.claude/
