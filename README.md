@@ -67,10 +67,7 @@ project-2/
 │   └── PROJECT_REPORT.md  #   Detailed project report
 ├── package.json           # Root dev script (runs all 3 apps concurrently)
 ├── start.ps1              # Start/stop script (PowerShell)
-├── start.bat / stop.bat   # Start/stop scripts (CMD)
-├── CLAUDE.md              # AI assistant project context
-├── EVALUATION.md          # ML evaluation framework documentation
-└── FILTER_TRACKING.md     # Filter usage tracking documentation
+└── start.bat / stop.bat   # Start/stop scripts (CMD)
 ```
 
 ## Quick Setup
