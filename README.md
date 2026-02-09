@@ -27,12 +27,12 @@ A graduation project showcasing a modern microservices architecture for an e-com
               └─────────────────────────────────────────────────────┘
 ```
 
-| Service | Tech | Port | Role |
-|---------|------|------|------|
-| **Frontend** | Next.js 16 / React 19 | 3000 | Customer-facing web app |
-| **Backend API** | NestJS / TypeScript | 8000 | Primary e-commerce REST API |
-| **ML Service** | FastAPI / Python | 8001 | Sentiment, personality, recommendations |
-| **Admin Panel** | Laravel 12 / Filament 4 | 8002 | Dashboard and data management |
+| Service         | Tech                    | Port | Role                                    |
+| --------------- | ----------------------- | ---- | --------------------------------------- |
+| **Frontend**    | Next.js 16 / React 19   | 3000 | Customer-facing web app                 |
+| **Backend API** | NestJS / TypeScript     | 8000 | Primary e-commerce REST API             |
+| **ML Service**  | FastAPI / Python        | 8001 | Sentiment, personality, recommendations |
+| **Admin Panel** | Laravel 12 / Filament 4 | 8002 | Dashboard and data management           |
 
 ## Tech Stack
 
@@ -145,17 +145,15 @@ cd ml-services && uvicorn main:app --reload --port=8001
 
 ### Default Credentials
 
-| Account | Email | Password |
-|---------|-------|----------|
-| Admin | admin@gmail.com | password |
+| Account   | Email            | Password |
+| --------- | ---------------- | -------- |
+| Admin     | admin@gmail.com  | password |
 | Test User | test@example.com | password |
 
 ## Documentation
 
-| Document | Description |
-|----------|-------------|
-| [docs/INSTALLATION.md](docs/INSTALLATION.md) | Full installation and setup guide from a fresh clone |
-| [docs/PROJECT_REPORT.md](docs/PROJECT_REPORT.md) | Detailed project report |
-| [EVALUATION.md](EVALUATION.md) | ML recommendation evaluation framework |
-| [FILTER_TRACKING.md](FILTER_TRACKING.md) | Filter usage tracking and its impact on recommendations |
-| [ml-services/DOCS.md](ml-services/DOCS.md) | ML service API documentation |
+| Document                                         | Description                                          |
+| ------------------------------------------------ | ---------------------------------------------------- |
+| [docs/INSTALLATION.md](docs/INSTALLATION.md)     | Full installation and setup guide from a fresh clone |
+| [docs/PROJECT_REPORT.md](docs/PROJECT_REPORT.md) | Detailed project report                              |
+| [ml-services/DOCS.md](ml-services/DOCS.md)       | ML service API documentation                         |
