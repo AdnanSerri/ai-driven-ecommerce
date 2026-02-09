@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(php artisan:*)",
-      "Bash(composer require:*)"
-    ]
-  }
-}
