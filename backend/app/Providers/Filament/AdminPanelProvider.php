@@ -27,10 +27,29 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->brandName('Admin Dashboard')
+            ->brandName('ShopAI Admin')
             ->colors([
-                'primary' => Color::Indigo,
+                'primary' => [
+                    50 => '238, 235, 255',
+                    100 => '220, 215, 254',
+                    200 => '191, 183, 253',
+                    300 => '155, 143, 251',
+                    400 => '129, 120, 246',
+                    500 => '99, 76, 233',
+                    600 => '79, 55, 214',
+                    700 => '67, 46, 190',
+                    800 => '55, 40, 154',
+                    900 => '47, 36, 126',
+                    950 => '28, 19, 85',
+                ],
+                'danger' => Color::Rose,
+                'gray' => Color::Slate,
+                'info' => Color::Sky,
+                'success' => Color::Emerald,
+                'warning' => Color::Amber,
             ])
+            ->darkMode()
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([

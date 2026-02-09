@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useEffect } from "react";
+import { motion } from "framer-motion";
 import { useProduct } from "@/hooks/use-products";
 import { useTrackInteraction } from "@/hooks/use-recommendations";
 import { useAuthStore } from "@/stores/auth-store";
@@ -11,7 +12,7 @@ import { ReviewForm } from "@/components/reviews/review-form";
 import { SimilarProducts } from "@/components/recommendations/similar-products";
 import { FrequentlyBoughtTogether } from "@/components/recommendations/frequently-bought-together";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Separator } from "@/components/ui/separator";
+import { fadeIn, fadeInUp } from "@/lib/motion";
 
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -57,7 +58,12 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   const primaryImage = product.images?.find((img) => img.is_primary)?.url || product.images?.[0]?.url;
 
   return (
-    <div className="container mx-auto px-4 py-6 space-y-10">
+    <motion.div
+      className="container mx-auto px-4 py-6 space-y-10"
+      initial="hidden"
+      animate="visible"
+      variants={fadeIn}
+    >
       <div className="grid md:grid-cols-2 gap-8">
         <ProductImages images={product.images} productName={product.name} />
         <div className="space-y-6">
@@ -73,17 +79,30 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
         </div>
       </div>
 
-      <Separator />
+      <div className="h-px gradient-primary opacity-20" />
 
-      <div className="space-y-6">
+      <motion.div
+        className="space-y-6"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={fadeInUp}
+      >
         <h2 className="text-xl font-bold">Reviews</h2>
         <ReviewForm productId={productId} />
         <ReviewList productId={productId} />
-      </div>
+      </motion.div>
 
-      <Separator />
+      <div className="h-px gradient-primary opacity-20" />
 
-      <SimilarProducts productId={productId} />
-    </div>
+      <motion.div
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={fadeInUp}
+      >
+        <SimilarProducts productId={productId} />
+      </motion.div>
+    </motion.div>
   );
 }

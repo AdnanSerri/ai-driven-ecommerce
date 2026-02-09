@@ -36,7 +36,12 @@
       "Bash(git rm:*)",
       "Bash(ls -la \"C:\\\\Users\\\\serri\\\\OneDrive\\\\Desktop\\\\codes\\\\project-2\\\\infrastructure\"\" | grep -E \".env)",
       "Bash(docker \")",
-      "Bash(git commit --amend -m \"$\\(cat <<''EOF''\nsnapshot: current state before frontend redesign\n\nFull project snapshot including all services:\n- Next.js frontend \\(current design - all files\\)\n- NestJS backend\n- Laravel backend\n- ML microservice\n- Infrastructure configs\n\nThis commit serves as a safe rollback point.\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")"
+      "Bash(git commit --amend -m \"$\\(cat <<''EOF''\nsnapshot: current state before frontend redesign\n\nFull project snapshot including all services:\n- Next.js frontend \\(current design - all files\\)\n- NestJS backend\n- Laravel backend\n- ML microservice\n- Infrastructure configs\n\nThis commit serves as a safe rollback point.\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git checkout:*)",
+      "Bash(bun add:*)",
+      "Bash(bun install:*)",
+      "Bash(bun run dev:*)",
+      "Bash(ls \"C:\\\\Users\\\\serri\\\\OneDrive\\\\Desktop\\\\codes\\\\project-2\\\\backend\\\\resources\\\\views\\\\filament\"\" 2>nul || echo \"Directory does not exist \")"
     ]
   }
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTheme } from "next-themes";
 import { useAuthStore } from "@/stores/auth-store";
 import { useLogout } from "@/hooks/use-auth";
 import { useHydration } from "@/hooks/use-hydration";
@@ -17,27 +18,29 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { User, LogOut, Package, Heart, MapPin, Star } from "lucide-react";
+import { User, LogOut, Package, Heart, MapPin, Star, Sun, Moon } from "lucide-react";
 
 export function Navbar() {
   const { user, token } = useAuthStore();
   const logout = useLogout();
   const hydrated = useHydration();
+  const { theme, setTheme } = useTheme();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
+      <div className="h-px w-full gradient-primary opacity-50" />
       <div className="container mx-auto flex h-16 items-center gap-4 px-4">
         <MobileNav />
 
-        <Link href="/" className="mr-4 flex items-center gap-2 font-bold text-xl">
+        <Link href="/" className="mr-4 flex items-center gap-2 font-bold text-xl gradient-primary-text">
           ShopAI
         </Link>
 
         <nav className="hidden md:flex items-center gap-6 text-sm">
-          <Link href="/products" className="text-muted-foreground hover:text-foreground transition-colors">
+          <Link href="/products" className="nav-link-underline text-muted-foreground hover:text-foreground transition-colors">
             Products
           </Link>
-          <Link href="/categories" className="text-muted-foreground hover:text-foreground transition-colors">
+          <Link href="/categories" className="nav-link-underline text-muted-foreground hover:text-foreground transition-colors">
             Categories
           </Link>
         </nav>
@@ -47,6 +50,17 @@ export function Navbar() {
         </div>
 
         <div className="ml-auto flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="rounded-full"
+          >
+            <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            <span className="sr-only">Toggle theme</span>
+          </Button>
+
           {!hydrated ? (
             <Skeleton className="h-8 w-20" />
           ) : token ? (
@@ -55,7 +69,7 @@ export function Navbar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="rounded-full">
-                    <Avatar className="h-8 w-8">
+                    <Avatar className="h-8 w-8 transition-all hover:ring-2 hover:ring-primary/30">
                       <AvatarFallback>
                         {user?.name?.charAt(0).toUpperCase() || "U"}
                       </AvatarFallback>
@@ -113,7 +127,7 @@ export function Navbar() {
               <Button variant="ghost" size="sm" asChild>
                 <Link href="/login">Login</Link>
               </Button>
-              <Button size="sm" asChild>
+              <Button variant="gradient" size="pill-sm" asChild>
                 <Link href="/register">Register</Link>
               </Button>
             </div>

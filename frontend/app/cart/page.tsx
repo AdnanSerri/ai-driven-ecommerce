@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { AuthGuard } from "@/components/auth-guard";
 import { useCart, useClearCart } from "@/hooks/use-cart";
 import { CartItem } from "@/components/cart/cart-item";
@@ -8,6 +9,7 @@ import { CartSummary } from "@/components/cart/cart-summary";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ShoppingCart, Trash2 } from "lucide-react";
+import { staggerContainer, staggerItem } from "@/lib/motion";
 
 function CartContent() {
   const { data: cart, isLoading } = useCart();
@@ -32,10 +34,10 @@ function CartContent() {
   if (!cart || cart.items.length === 0) {
     return (
       <div className="container mx-auto px-4 py-12 text-center">
-        <ShoppingCart className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+        <ShoppingCart className="h-16 w-16 mx-auto text-primary/40 mb-4" />
         <h1 className="text-2xl font-bold mb-2">Your cart is empty</h1>
         <p className="text-muted-foreground mb-6">Browse our products and add items to your cart.</p>
-        <Button asChild>
+        <Button variant="gradient" size="pill" asChild>
           <Link href="/products">Continue Shopping</Link>
         </Button>
       </div>
@@ -59,11 +61,18 @@ function CartContent() {
       </div>
 
       <div className="grid md:grid-cols-3 gap-8">
-        <div className="md:col-span-2">
+        <motion.div
+          className="md:col-span-2"
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
+        >
           {cart.items.map((item) => (
-            <CartItem key={item.id} item={item} />
+            <motion.div key={item.id} variants={staggerItem}>
+              <CartItem item={item} />
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
         <div>
           <CartSummary cart={cart} />
         </div>

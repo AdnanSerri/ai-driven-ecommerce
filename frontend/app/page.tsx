@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { useProducts, useCategories } from "@/hooks/use-products";
 import { useAuthStore } from "@/stores/auth-store";
 import { ProductGrid } from "@/components/products/product-grid";
@@ -10,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowRight, ShoppingBag, TrendingUp } from "lucide-react";
+import { fadeInUp } from "@/lib/motion";
 import { Category } from "@/types";
 
 function getTotalProductsCount(category: Category): number {
@@ -31,37 +33,52 @@ export default function HomePage() {
   const { data: categories, isLoading: categoriesLoading } = useCategories();
 
   return (
-    <div className="space-y-12 pb-12">
+    <div className="space-y-16 pb-16">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary/10 via-background to-primary/5 py-16 md:py-24">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4">
+      <section className="relative mesh-gradient py-20 md:py-32 overflow-hidden">
+        {/* Decorative floating circles */}
+        <div className="absolute top-10 left-[10%] w-72 h-72 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
+        <div className="absolute bottom-10 right-[15%] w-96 h-96 rounded-full bg-primary/5 blur-3xl pointer-events-none" />
+
+        <motion.div
+          className="container mx-auto px-4 text-center relative z-10"
+          initial="hidden"
+          animate="visible"
+          variants={fadeInUp}
+        >
+          <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
             Shop Smarter with{" "}
-            <span className="text-primary">AI</span>
+            <span className="gradient-primary-text">AI</span>
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
             Discover products tailored to your taste. Our AI-powered platform learns your preferences
             to deliver personalized recommendations.
           </p>
           <div className="flex gap-4 justify-center">
-            <Button size="lg" asChild>
+            <Button variant="gradient" size="pill-lg" asChild>
               <Link href="/products">
                 <ShoppingBag className="h-5 w-5 mr-2" />
                 Shop Now
               </Link>
             </Button>
             {!token && (
-              <Button size="lg" variant="outline" asChild>
+              <Button size="pill-lg" variant="outline" asChild>
                 <Link href="/register">Create Account</Link>
               </Button>
             )}
           </div>
-        </div>
+        </motion.div>
       </section>
 
-      <div className="container mx-auto px-4 space-y-12">
+      <div className="container mx-auto px-4 space-y-16">
         {/* Categories */}
-        <section className="space-y-4">
+        <motion.section
+          className="space-y-4"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={fadeInUp}
+        >
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold">Shop by Category</h2>
           </div>
@@ -77,7 +94,7 @@ export default function HomePage() {
                 const totalProducts = getTotalProductsCount(cat);
                 return (
                   <Link key={cat.id} href={`/categories/${cat.id}`}>
-                    <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+                    <Card className="hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1 hover:border-primary/20 transition-all duration-300 cursor-pointer h-full">
                       <CardContent className="flex items-center justify-between p-4">
                         <div>
                           <h3 className="font-medium">{cat.name}</h3>
@@ -91,7 +108,7 @@ export default function HomePage() {
               })}
             </div>
           )}
-        </section>
+        </motion.section>
 
         {/* Recommendations (for logged-in users) */}
         <RecommendedProducts />
@@ -100,7 +117,13 @@ export default function HomePage() {
         <TrendingProducts />
 
         {/* New Arrivals */}
-        <section className="space-y-4">
+        <motion.section
+          className="space-y-4"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={fadeInUp}
+        >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-primary" />
@@ -117,7 +140,7 @@ export default function HomePage() {
             products={featured?.data.slice(0, 8) || []}
             isLoading={featuredLoading}
           />
-        </section>
+        </motion.section>
       </div>
     </div>
   );

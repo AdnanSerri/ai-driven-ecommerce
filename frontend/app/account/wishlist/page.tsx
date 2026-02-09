@@ -28,10 +28,10 @@ export default function WishlistPage() {
   if (!wishlist || wishlist.length === 0) {
     return (
       <div className="text-center py-12">
-        <Heart className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+        <Heart className="h-16 w-16 mx-auto text-primary/40 mb-4" />
         <h2 className="text-xl font-bold mb-2">Your wishlist is empty</h2>
         <p className="text-muted-foreground mb-4">Save products you love for later.</p>
-        <Button asChild>
+        <Button variant="gradient" size="pill" asChild>
           <Link href="/products">Browse Products</Link>
         </Button>
       </div>
@@ -45,7 +45,7 @@ export default function WishlistPage() {
         {wishlist.map((item) => {
           const img = item.product?.images?.find((i) => i.is_primary) || item.product?.images?.[0];
           return (
-            <Card key={item.id} className="overflow-hidden">
+            <Card key={item.id} className="overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1 hover:border-primary/20">
               <Link href={`/products/${item.product_id}`}>
                 <div className="relative aspect-square bg-muted">
                   {img ? (
@@ -73,7 +73,7 @@ export default function WishlistPage() {
                 <div className="flex gap-2">
                   <Button
                     size="sm"
-                    className="flex-1"
+                    className="flex-1 rounded-full"
                     disabled={!item.product || item.product.stock_quantity <= 0}
                     onClick={() =>
                       addToCart.mutate({ product_id: item.product_id, quantity: 1 })

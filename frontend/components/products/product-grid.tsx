@@ -1,5 +1,9 @@
+"use client";
+
+import { motion } from "framer-motion";
 import { ProductCard } from "@/components/products/product-card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { staggerContainer, staggerItem } from "@/lib/motion";
 import type { Product } from "@/types";
 
 interface ProductGridProps {
@@ -33,10 +37,17 @@ export function ProductGrid({ products, isLoading }: ProductGridProps) {
   }
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <motion.div
+      className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+      variants={staggerContainer}
+      initial="hidden"
+      animate="visible"
+    >
       {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
+        <motion.div key={product.id} variants={staggerItem}>
+          <ProductCard product={product} />
+        </motion.div>
       ))}
-    </div>
+    </motion.div>
   );
 }

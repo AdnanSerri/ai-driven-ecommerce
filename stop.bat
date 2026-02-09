@@ -1,54 +1,55 @@
 @echo off
+setlocal
+
 REM ============================================================================
-REM Project 2 - Stop Script (Windows)
+REM Project 2 - Stop All Services
 REM ============================================================================
-REM Stops all services
 REM
 REM Usage:
-REM   stop.bat           - Stop apps only (keep databases running)
-REM   stop.bat all       - Stop everything including databases
+REM   stop.bat           - Stop app services only
+REM   stop.bat all       - Stop apps + infrastructure (Docker)
+REM   stop.bat infra     - Stop infrastructure only
+REM
 REM ============================================================================
 
 echo.
-echo ========================================
-echo   Stopping Project 2 Services
-echo ========================================
+echo   ======================================================
+echo     Stopping Project 2 Services
+echo   ======================================================
 echo.
 
-REM Kill Laravel PHP processes
-echo Stopping Laravel...
-taskkill /F /IM php.exe /T 2>nul
-if %ERRORLEVEL% EQU 0 (
-    echo   Laravel stopped.
-) else (
-    echo   Laravel was not running.
-)
-
-REM Kill Python/Uvicorn processes
-echo Stopping ML Service...
-taskkill /F /IM python.exe /T 2>nul
-if %ERRORLEVEL% EQU 0 (
-    echo   ML Service stopped.
-) else (
-    echo   ML Service was not running.
-)
-
-REM Check if infrastructure should be stopped
-if "%1"=="all" goto :stop_infra
 if "%1"=="infra" goto :stop_infra
-goto :done
+
+REM ─── Stop apps by port ──────────────────────────────────────
+
+echo   Stopping applications...
+echo.
+
+for %%p in (8000 3000 8001) do (
+    for /f "tokens=5" %%a in ('netstat -aon 2^>nul ^| findstr ":%%p.*LISTENING"') do (
+        echo     Stopping PID %%a on :%%p
+        taskkill /F /PID %%a >nul 2>&1
+    )
+)
+
+echo.
+echo   Applications stopped.
+
+if not "%1"=="all" goto :done
+
+REM ─── Stop infrastructure ────────────────────────────────────
 
 :stop_infra
 echo.
-echo Stopping Infrastructure (Docker)...
+echo   Stopping infrastructure (Docker)...
 cd /d "%~dp0infrastructure"
 docker-compose down
 echo   Infrastructure stopped.
 
 :done
 echo.
-echo ========================================
-echo   All services stopped!
-echo ========================================
+echo   ======================================================
+echo     All done.
+echo   ======================================================
 echo.
 pause

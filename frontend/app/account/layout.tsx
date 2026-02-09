@@ -28,10 +28,10 @@ function AccountLayoutInner({ children }: { children: React.ReactNode }) {
                 key={href}
                 href={href}
                 className={cn(
-                  "flex items-center gap-2 px-3 py-2 rounded-md text-sm whitespace-nowrap transition-colors",
+                  "flex items-center gap-2 px-3 py-2 rounded-full text-sm whitespace-nowrap transition-all",
                   pathname === href
                     ? "bg-primary text-primary-foreground"
-                    : "hover:bg-muted text-muted-foreground"
+                    : "hover:bg-accent text-muted-foreground"
                 )}
               >
                 <Icon className="h-4 w-4" />

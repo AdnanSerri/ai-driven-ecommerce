@@ -100,7 +100,7 @@ export function SearchBar() {
 
       {/* Dropdown Results */}
       {isOpen && debouncedQuery.trim() && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-background border rounded-md shadow-lg z-50 max-h-80 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-background/95 backdrop-blur-xl border rounded-xl shadow-xl z-50 max-h-80 overflow-y-auto">
           {isLoading ? (
             <div className="p-4 text-center text-sm text-muted-foreground">
               Searching...
@@ -113,9 +113,9 @@ export function SearchBar() {
                   <button
                     key={product.id}
                     onClick={() => handleSelect(product.id)}
-                    className="w-full flex items-center gap-3 p-3 hover:bg-muted text-left transition-colors"
+                    className="w-full flex items-center gap-3 p-3 hover:bg-accent/50 text-left transition-all duration-200 rounded-lg mx-1 first:mt-1"
                   >
-                    <div className="relative w-10 h-10 flex-shrink-0 rounded bg-muted overflow-hidden">
+                    <div className="relative w-10 h-10 flex-shrink-0 rounded-lg bg-muted overflow-hidden">
                       {primaryImage ? (
                         <Image
                           src={proxyImageUrl(primaryImage.url)}
@@ -142,7 +142,7 @@ export function SearchBar() {
               <Link
                 href={`/products?search=${encodeURIComponent(query.trim())}`}
                 onClick={() => setIsOpen(false)}
-                className="block p-3 text-center text-sm text-primary hover:bg-muted transition-colors border-t"
+                className="block p-3 text-center text-sm text-primary hover:bg-accent/50 transition-all duration-200 border-t"
               >
                 View all results
               </Link>

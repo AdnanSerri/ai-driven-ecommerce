@@ -49,7 +49,7 @@ export function ReviewForm({ productId }: ReviewFormProps) {
   if (!token) return null;
 
   return (
-    <div className="space-y-4 border rounded-lg p-4">
+    <div className="space-y-4 rounded-xl p-6 bg-card border border-border/50">
       <h3 className="font-semibold">Write a Review</h3>
       <div className="space-y-2">
         <Label>Rating</Label>
@@ -75,6 +75,8 @@ export function ReviewForm({ productId }: ReviewFormProps) {
         />
       </div>
       <Button
+        variant="gradient"
+        className="rounded-full"
         onClick={() => submit.mutate()}
         disabled={rating === 0 || !comment.trim() || submit.isPending}
       >

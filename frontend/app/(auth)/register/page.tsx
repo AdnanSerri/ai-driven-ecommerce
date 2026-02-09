@@ -27,10 +27,10 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex min-h-[80vh] items-center justify-center px-4">
-      <Card className="w-full max-w-md">
+    <div className="flex min-h-[80vh] items-center justify-center px-4 mesh-gradient">
+      <Card className="w-full max-w-md shadow-xl shadow-primary/5 border-primary/10">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Create an account</CardTitle>
+          <CardTitle className="text-2xl gradient-primary-text">Create an account</CardTitle>
           <CardDescription>Get started with ShopAI</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
@@ -81,8 +81,8 @@ export default function RegisterPage() {
               />
             </div>
           </CardContent>
-          <CardFooter className="flex flex-col gap-3">
-            <Button type="submit" className="w-full" disabled={register.isPending}>
+          <CardFooter className="flex flex-col gap-3 mt-5">
+            <Button type="submit" variant="gradient" className="w-full rounded-full" disabled={register.isPending}>
               {register.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Create Account
             </Button>

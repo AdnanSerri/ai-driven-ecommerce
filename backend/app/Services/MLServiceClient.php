@@ -76,7 +76,6 @@ class MLServiceClient
      * Batch analyze sentiment for multiple texts.
      *
      * @param  array<array{text: string, user_id: int}>  $items
-     * @return array|null
      */
     public function analyzeSentimentBatch(array $items): ?array
     {
@@ -108,8 +107,6 @@ class MLServiceClient
 
     /**
      * Get personalized recommendations for a user.
-     *
-     * @return array|null
      */
     public function getRecommendations(int $userId, int $limit = 10): ?array
     {
@@ -133,8 +130,6 @@ class MLServiceClient
 
     /**
      * Get similar products for a given product.
-     *
-     * @return array|null
      */
     public function getSimilarProducts(int $productId, int $limit = 5): ?array
     {
@@ -158,8 +153,6 @@ class MLServiceClient
 
     /**
      * Get frequently bought together products.
-     *
-     * @return array|null
      */
     public function getFrequentlyBoughtTogether(int $productId, int $limit = 5): ?array
     {
@@ -210,16 +203,20 @@ class MLServiceClient
 
     /**
      * Get user personality profile.
-     *
-     * @return array|null
      */
-    public function getUserPersonality(int $userId): ?array
+    public function getUserPersonality(int $userId, bool $forceRecalculate = false): ?array
     {
         $cacheKey = "ml.personality.{$userId}";
 
-        return Cache::remember($cacheKey, 600, function () use ($userId) {
+        if ($forceRecalculate) {
+            Cache::forget($cacheKey);
+        }
+
+        return Cache::remember($cacheKey, 600, function () use ($userId, $forceRecalculate) {
             try {
-                return $this->get("/api/v1/personality/profile/{$userId}");
+                $query = $forceRecalculate ? ['force_recalculate' => 'true'] : [];
+
+                return $this->get("/api/v1/personality/profile/{$userId}", $query);
             } catch (\Exception $e) {
                 Log::error('Failed to get user personality', [
                     'user_id' => $userId,
@@ -233,8 +230,6 @@ class MLServiceClient
 
     /**
      * Get detailed personality traits for a user.
-     *
-     * @return array|null
      */
     public function getUserPersonalityTraits(int $userId): ?array
     {

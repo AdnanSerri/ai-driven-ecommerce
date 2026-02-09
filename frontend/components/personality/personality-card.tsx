@@ -44,8 +44,8 @@ const PERSONALITY_LABELS: Record<string, { label: string; description: string }>
 };
 
 function getConfidenceLabel(confidence: number): { label: string; color: string } {
-  if (confidence >= 0.8) return { label: "High confidence", color: "text-green-600" };
-  if (confidence >= 0.5) return { label: "Moderate confidence", color: "text-yellow-600" };
+  if (confidence >= 0.8) return { label: "High confidence", color: "text-success" };
+  if (confidence >= 0.5) return { label: "Moderate confidence", color: "text-warning" };
   return { label: "Building profile", color: "text-muted-foreground" };
 }
 
@@ -111,7 +111,7 @@ export function PersonalityCard() {
         {/* Main personality type */}
         <div className="space-y-3">
           <div className="flex items-center gap-3 flex-wrap">
-            <Badge variant="default" className="text-sm px-3 py-1.5">
+            <Badge variant="gradient" className="text-sm px-3 py-1.5">
               {personalityInfo.label}
             </Badge>
             <span className={`text-xs ${confidenceInfo.color}`}>
@@ -170,7 +170,7 @@ export function PersonalityCard() {
                     </div>
                     <div className="h-2 bg-muted rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-primary rounded-full transition-all"
+                        className="h-full gradient-primary rounded-full transition-all"
                         style={{ width: `${Math.round(dimension.score * 100)}%` }}
                       />
                     </div>

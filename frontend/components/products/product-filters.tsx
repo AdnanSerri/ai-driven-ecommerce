@@ -35,8 +35,8 @@ export function ProductFiltersPanel({ filters, onFilterChange, onReset }: Produc
         <div className="space-y-2">
           <button
             onClick={() => onFilterChange({ category_id: undefined })}
-            className={`block text-sm w-full text-left px-2 py-1 rounded ${
-              !filters.category_id ? "bg-primary text-primary-foreground" : "hover:bg-muted"
+            className={`block text-sm w-full text-left px-2 py-1 rounded transition-colors ${
+              !filters.category_id ? "bg-primary text-primary-foreground" : "hover:bg-accent"
             }`}
           >
             All Categories
@@ -47,8 +47,8 @@ export function ProductFiltersPanel({ filters, onFilterChange, onReset }: Produc
               <button
                 key={cat.id}
                 onClick={() => onFilterChange({ category_id: cat.id })}
-                className={`block text-sm w-full text-left px-2 py-1 rounded ${
-                  filters.category_id === cat.id ? "bg-primary text-primary-foreground" : "hover:bg-muted"
+                className={`block text-sm w-full text-left px-2 py-1 rounded transition-colors ${
+                  filters.category_id === cat.id ? "bg-primary text-primary-foreground" : "hover:bg-accent"
                 }`}
               >
                 {cat.name}
@@ -115,7 +115,7 @@ export function ProductFiltersPanel({ filters, onFilterChange, onReset }: Produc
         </Label>
       </div>
 
-      <Button variant="outline" size="sm" onClick={onReset} className="w-full">
+      <Button variant="outline" size="sm" onClick={onReset} className="w-full rounded-full">
         Reset Filters
       </Button>
     </div>

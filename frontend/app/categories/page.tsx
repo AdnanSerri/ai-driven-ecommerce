@@ -69,7 +69,7 @@ export default function CategoriesPage() {
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {category.children!.map((child) => (
                       <Link key={child.id} href={`/categories/${child.id}`}>
-                        <Card className="h-full hover:shadow-md transition-shadow cursor-pointer">
+                        <Card className="h-full hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1 hover:border-primary/20 transition-all duration-300 cursor-pointer">
                           <CardHeader className="pb-2">
                             <CardTitle className="text-base">
                               {child.name}
@@ -88,7 +88,7 @@ export default function CategoriesPage() {
                   </div>
                 ) : (
                   <Link href={`/categories/${category.id}`}>
-                    <Card className="hover:shadow-md transition-shadow cursor-pointer max-w-sm">
+                    <Card className="hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1 hover:border-primary/20 transition-all duration-300 cursor-pointer max-w-sm">
                       <CardContent className="py-4">
                         <p className="text-sm text-muted-foreground">
                           Browse {category.name}
@@ -103,7 +103,7 @@ export default function CategoriesPage() {
         </div>
       ) : (
         <div className="text-center py-12">
-          <Grid3X3 className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+          <Grid3X3 className="h-16 w-16 mx-auto text-primary/40 mb-4" />
           <p className="text-muted-foreground">No categories found</p>
         </div>
       )}

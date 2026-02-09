@@ -66,7 +66,7 @@ function ProductItem({
             ${formatPrice(product.price || 0)}
           </span>
           {!product.in_stock && (
-            <span className="text-xs text-red-500">Out of stock</span>
+            <span className="text-xs text-destructive">Out of stock</span>
           )}
         </div>
       </div>
@@ -210,7 +210,8 @@ export function FrequentlyBoughtTogether({
               <span className="text-xl font-bold">${formatPrice(bundleTotal)}</span>
             </div>
             <Button
-              className="w-full"
+              variant="gradient"
+              className="w-full rounded-full"
               onClick={handleAddAllToCart}
               disabled={addToCartMutation.isPending}
             >

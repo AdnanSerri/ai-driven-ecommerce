@@ -27,10 +27,10 @@ function CheckoutContent() {
   if (!cart || cart.items.length === 0) {
     return (
       <div className="container mx-auto px-4 py-12 text-center">
-        <ShoppingCart className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+        <ShoppingCart className="h-16 w-16 mx-auto text-primary/40 mb-4" />
         <h1 className="text-2xl font-bold mb-2">Cart is empty</h1>
         <p className="text-muted-foreground mb-6">Add items to your cart before checking out.</p>
-        <Button asChild>
+        <Button variant="gradient" size="pill" asChild>
           <Link href="/products">Browse Products</Link>
         </Button>
       </div>

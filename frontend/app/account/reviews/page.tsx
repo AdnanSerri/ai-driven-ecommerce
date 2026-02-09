@@ -34,7 +34,7 @@ export default function MyReviewsPage() {
   if (!reviews || reviews.length === 0) {
     return (
       <div className="text-center py-12">
-        <Star className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+        <Star className="h-16 w-16 mx-auto text-primary/40 mb-4" />
         <h2 className="text-xl font-bold mb-2">No reviews yet</h2>
         <p className="text-muted-foreground">Your reviews will appear here after you write them.</p>
       </div>

@@ -13,7 +13,7 @@ When users apply filters on the products page and then click on products, we cap
 ## Data Flow
 
 ```
-Frontend (filter + click) → NestJS (POST /interactions with metadata)
+Frontend (filter + click) → NestJS (POST /api/interactions with metadata)
     → Kafka (user.interaction) → ML Service → PostgreSQL (metadata JSONB)
     → Personality Classifier & Recommendation Engine
 ```
@@ -113,7 +113,7 @@ The following settings control filter signal behavior (in `ml-services/config.py
 
 ```bash
 # Frontend automatically includes filter_context when clicking products with active filters
-POST /interactions
+POST /api/interactions
 {
   "product_id": 123,
   "interaction_type": "click",

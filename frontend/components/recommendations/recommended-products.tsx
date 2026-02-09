@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { useRecommendations, useRecommendationFeedback } from "@/hooks/use-recommendations";
 import { useAuthStore } from "@/stores/auth-store";
 import { ProductCard } from "@/components/products/product-card";
@@ -15,29 +16,28 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, X, MoreVertical, Eye, User, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { staggerContainer, staggerItem } from "@/lib/motion";
 
 function getReasonStyle(reason: string) {
   const lowerReason = reason.toLowerCase();
   if (lowerReason.includes("viewed")) {
-    return { icon: Eye, className: "bg-blue-500 text-white hover:bg-blue-600" };
+    return { icon: Eye, variant: "info" as const };
   }
   if (lowerReason.includes("style") || lowerReason.includes("personality") || lowerReason.includes("shopper")) {
-    return { icon: User, className: "bg-purple-500 text-white hover:bg-purple-600" };
+    return { icon: User, variant: "gradient" as const };
   }
   if (lowerReason.includes("recent") || lowerReason.includes("history")) {
-    return { icon: Clock, className: "bg-amber-500 text-white hover:bg-amber-600" };
+    return { icon: Clock, variant: "warning" as const };
   }
-  return { icon: Sparkles, className: "bg-indigo-500 text-white hover:bg-indigo-600" };
+  return { icon: Sparkles, variant: "default" as const };
 }
 
 function ReasonBadge({ reason }: { reason: string }) {
-  const { icon: Icon, className } = getReasonStyle(reason);
+  const { icon: Icon, variant } = getReasonStyle(reason);
   return (
     <Badge
-      className={cn(
-        "flex items-center gap-0 text-xs font-medium border-0 cursor-default transition-all duration-300 ease-out group/badge",
-        className
-      )}
+      variant={variant}
+      className="flex items-center gap-0 text-xs font-medium border-0 cursor-default transition-all duration-300 ease-out group/badge"
     >
       <Icon className="h-3 w-3 shrink-0" />
       <span className="max-w-0 overflow-hidden whitespace-nowrap transition-all duration-300 ease-out group-hover/badge:max-w-[300px] group-hover/badge:ml-1">
@@ -97,10 +97,16 @@ export function RecommendedProducts() {
         <Sparkles className="h-5 w-5 text-primary" />
         <h2 className="text-xl font-bold">Recommended for You</h2>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <motion.div
+        className="grid grid-cols-2 md:grid-cols-4 gap-4"
+        variants={staggerContainer}
+        initial="hidden"
+        animate="visible"
+      >
         {visibleRecommendations.map((rec) => (
-          <div
+          <motion.div
             key={rec.product.id}
+            variants={staggerItem}
             className={cn(
               "relative group transition-opacity duration-300",
               dismissedIds.has(rec.product.id) && "opacity-0 pointer-events-none"
@@ -154,9 +160,9 @@ export function RecommendedProducts() {
             </div>
 
             <ProductCard product={rec.product} />
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </section>
   );
 }

@@ -31,7 +31,7 @@ class InteractionBreakdown extends ChartWidget
                 'datasets' => [
                     [
                         'data' => [1],
-                        'backgroundColor' => ['#e5e7eb'],
+                        'backgroundColor' => ['rgba(99, 76, 233, 0.15)'],
                     ],
                 ],
                 'labels' => ['No Data'],
@@ -42,16 +42,16 @@ class InteractionBreakdown extends ChartWidget
         $values = array_values($data);
 
         $colors = [
-            '#3b82f6', // blue
-            '#10b981', // green
-            '#f59e0b', // amber
-            '#ef4444', // red
-            '#8b5cf6', // violet
-            '#ec4899', // pink
-            '#06b6d4', // cyan
+            '#634CE9', // primary indigo
+            '#10b981', // success emerald
+            '#f59e0b', // warning amber
+            '#f43f5e', // danger rose
+            '#8B42D2', // violet (gradient end)
+            '#0ea5e9', // info sky
+            '#6D42E0', // violet (gradient mid)
             '#84cc16', // lime
             '#f97316', // orange
-            '#6366f1', // indigo
+            '#8178F6', // primary light
         ];
 
         return [

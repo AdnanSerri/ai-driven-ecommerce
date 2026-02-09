@@ -147,7 +147,9 @@ function ProductsContent() {
 
       <div className="flex gap-8">
         <aside className="hidden md:block w-64 flex-shrink-0">
-          <ProductFiltersPanel filters={filters} onFilterChange={handleFilterChange} onReset={handleReset} />
+          <div className="border rounded-xl bg-card/50 p-4">
+            <ProductFiltersPanel filters={filters} onFilterChange={handleFilterChange} onReset={handleReset} />
+          </div>
         </aside>
 
         <div className="flex-1 space-y-6">
@@ -164,6 +166,7 @@ function ProductsContent() {
               <Button
                 variant="outline"
                 size="sm"
+                className="rounded-full"
                 disabled={data.current_page <= 1}
                 onClick={() => setFilters((prev) => ({ ...prev, page: (prev.page || 1) - 1 }))}
               >
@@ -176,6 +179,7 @@ function ProductsContent() {
               <Button
                 variant="outline"
                 size="sm"
+                className="rounded-full"
                 disabled={data.current_page >= data.last_page}
                 onClick={() => setFilters((prev) => ({ ...prev, page: (prev.page || 1) + 1 }))}
               >

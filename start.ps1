@@ -1,13 +1,13 @@
 # ============================================================================
-# Project 2 - Start Script (PowerShell)
+# Project 2 - Unified Dev Server
 # ============================================================================
-# Starts both Laravel and ML Service in separate terminal windows
 #
 # Usage:
-#   .\start.ps1              - Start Laravel and ML Service only
-#   .\start.ps1 -Infra       - Start infrastructure first, then apps
-#   .\start.ps1 -Stop        - Stop all services
-#   .\start.ps1 -Status      - Check status of all services
+#   .\start.ps1                - Start all 3 services (unified output)
+#   .\start.ps1 -Infra         - Start infrastructure first, then services
+#   .\start.ps1 -Stop          - Stop all services
+#   .\start.ps1 -Status        - Check all service statuses
+#
 # ============================================================================
 
 param(
@@ -17,107 +17,166 @@ param(
 )
 
 $ProjectRoot = $PSScriptRoot
+Set-Location $ProjectRoot
 
-function Write-Header {
+# --- Helpers ----------------------------------------------------------------
+
+function Test-Port {
+    param([int]$Port)
+    try {
+        $tcp = [System.Net.Sockets.TcpClient]::new()
+        $tcp.Connect("127.0.0.1", $Port)
+        $tcp.Close()
+        return $true
+    } catch {
+        return $false
+    }
+}
+
+function Write-StatusLine {
+    param([string]$Name, [int]$Port, [string]$Desc)
+    $pad = " " * (14 - $Name.Length)
+    $running = Test-Port $Port
+    if ($running) {
+        Write-Host "    $Name$pad" -NoNewline
+        Write-Host "UP" -ForegroundColor Green -NoNewline
+        Write-Host "      :$Port   $Desc" -ForegroundColor DarkGray
+    } else {
+        Write-Host "    $Name$pad" -NoNewline
+        Write-Host "--" -ForegroundColor DarkGray -NoNewline
+        Write-Host "      :$Port   $Desc" -ForegroundColor DarkGray
+    }
+}
+
+# --- Banner -----------------------------------------------------------------
+
+function Write-Banner {
     Write-Host ""
-    Write-Host "========================================" -ForegroundColor Cyan
-    Write-Host "  Project 2 - E-commerce Platform" -ForegroundColor Cyan
-    Write-Host "========================================" -ForegroundColor Cyan
+    Write-Host "  ========================================================" -ForegroundColor Cyan
+    Write-Host "                                                          " -ForegroundColor Cyan
+    Write-Host "          E-COMMERCE PLATFORM  -  DEV SERVER              " -ForegroundColor Cyan
+    Write-Host "                                                          " -ForegroundColor Cyan
+    Write-Host "  ========================================================" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "    " -NoNewline
+    Write-Host "NESTJS" -ForegroundColor Red -NoNewline
+    Write-Host "    http://localhost:8000   " -ForegroundColor White -NoNewline
+    Write-Host "API Backend" -ForegroundColor DarkGray
+    Write-Host "    " -NoNewline
+    Write-Host "NEXTJS" -ForegroundColor Cyan -NoNewline
+    Write-Host "    http://localhost:3000   " -ForegroundColor White -NoNewline
+    Write-Host "Frontend" -ForegroundColor DarkGray
+    Write-Host "    " -NoNewline
+    Write-Host "ML    " -ForegroundColor Magenta -NoNewline
+    Write-Host "    http://localhost:8001   " -ForegroundColor White -NoNewline
+    Write-Host "ML Service" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "  ========================================================" -ForegroundColor Cyan
     Write-Host ""
 }
 
+# --- Infrastructure ---------------------------------------------------------
+
 function Start-Infrastructure {
-    Write-Host "[1/3] Starting Infrastructure (Docker)..." -ForegroundColor Yellow
+    Write-Host "  Starting infrastructure..." -ForegroundColor Yellow
+    Write-Host ""
     Set-Location "$ProjectRoot\infrastructure"
     docker-compose up -d
     if ($LASTEXITCODE -ne 0) {
-        Write-Host "ERROR: Failed to start infrastructure. Is Docker running?" -ForegroundColor Red
+        Write-Host ""
+        Write-Host "  FAILED - Is Docker Desktop running?" -ForegroundColor Red
         exit 1
     }
-    Write-Host "Infrastructure started! Waiting 10 seconds for databases..." -ForegroundColor Green
+    Write-Host ""
+    Write-Host "  Infrastructure up. Waiting 10s for databases..." -ForegroundColor Green
     Start-Sleep -Seconds 10
     Set-Location $ProjectRoot
+    Write-Host ""
 }
 
-function Start-Laravel {
-    Write-Host "[2/3] Starting Laravel Backend (port 8000)..." -ForegroundColor Yellow
-    Start-Process -FilePath "cmd.exe" -ArgumentList "/k", "cd /d `"$ProjectRoot\backend`" && php artisan serve --port=8000" -WindowStyle Normal
+# --- Status -----------------------------------------------------------------
+
+function Show-Status {
+    Write-Host ""
+    Write-Host "  Services" -ForegroundColor White
+    Write-Host "  ----------------------------------------" -ForegroundColor DarkGray
+    Write-StatusLine "NestJS"     8000  "API Backend"
+    Write-StatusLine "Next.js"    3000  "Frontend"
+    Write-StatusLine "ML Service" 8001  "ML Microservice"
+    Write-StatusLine "Laravel"    8002  "Admin Panel (Docker)"
+    Write-Host ""
+    Write-Host "  Infrastructure" -ForegroundColor White
+    Write-Host "  ----------------------------------------" -ForegroundColor DarkGray
+    Write-StatusLine "PostgreSQL" 5432  ""
+    Write-StatusLine "MongoDB"    27017 ""
+    Write-StatusLine "Redis"      6379  ""
+    Write-StatusLine "Weaviate"   8085  ""
+    Write-StatusLine "Kafka"      29092 ""
+    Write-StatusLine "Kafka UI"   8086  ""
+    Write-StatusLine "pgAdmin"    5050  ""
+    Write-Host ""
 }
 
-function Start-MLService {
-    Write-Host "[3/3] Starting ML Service (port 8001)..." -ForegroundColor Yellow
-    Start-Sleep -Seconds 2
-
-    # Check if .venv exists
-    $venvPath = "$ProjectRoot\ml-services\.venv\Scripts\Activate.ps1"
-    if (Test-Path $venvPath) {
-        Start-Process -FilePath "powershell.exe" -ArgumentList "-NoExit", "-Command", "cd '$ProjectRoot\ml-services'; & '.\.venv\Scripts\Activate.ps1'; uvicorn main:app --reload --port=8001" -WindowStyle Normal
-    } else {
-        Start-Process -FilePath "cmd.exe" -ArgumentList "/k", "cd /d `"$ProjectRoot\ml-services`" && uvicorn main:app --reload --port=8001" -WindowStyle Normal
-    }
-}
+# --- Stop -------------------------------------------------------------------
 
 function Stop-AllServices {
-    Write-Host "Stopping all services..." -ForegroundColor Yellow
-
-    # Stop Docker infrastructure
-    Set-Location "$ProjectRoot\infrastructure"
-    docker-compose down
-
-    # Kill Laravel and Uvicorn processes
-    Get-Process -Name "php" -ErrorAction SilentlyContinue | Stop-Process -Force
-    Get-Process -Name "uvicorn" -ErrorAction SilentlyContinue | Stop-Process -Force
-    Get-Process -Name "python" -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowTitle -like "*uvicorn*" } | Stop-Process -Force
-
-    Write-Host "All services stopped." -ForegroundColor Green
-    Set-Location $ProjectRoot
-}
-
-function Get-ServiceStatus {
-    Write-Host "Checking service status..." -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "  Stopping services..." -ForegroundColor Yellow
     Write-Host ""
 
-    # Check Docker containers
-    Write-Host "Docker Containers:" -ForegroundColor Cyan
-    docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | Select-String "infra-"
-    Write-Host ""
-
-    # Check Laravel
-    Write-Host "Laravel (port 8000): " -NoNewline
-    try {
-        $response = Invoke-WebRequest -Uri "http://localhost:8000" -TimeoutSec 2 -ErrorAction SilentlyContinue
-        Write-Host "Running" -ForegroundColor Green
-    } catch {
-        Write-Host "Not running" -ForegroundColor Red
+    $ports = @(8000, 3000, 8001)
+    foreach ($port in $ports) {
+        $connections = Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue
+        foreach ($conn in $connections) {
+            $proc = Get-Process -Id $conn.OwningProcess -ErrorAction SilentlyContinue
+            if ($proc) {
+                Write-Host "    Stopping $($proc.ProcessName) on :$port" -ForegroundColor DarkGray
+                Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue
+            }
+        }
     }
 
-    # Check ML Service
-    Write-Host "ML Service (port 8001): " -NoNewline
-    try {
-        $response = Invoke-WebRequest -Uri "http://localhost:8001/health" -TimeoutSec 2 -ErrorAction SilentlyContinue
-        Write-Host "Running" -ForegroundColor Green
-    } catch {
-        Write-Host "Not running" -ForegroundColor Red
+    Write-Host ""
+    Write-Host "  All services stopped." -ForegroundColor Green
+    Write-Host ""
+}
+
+# --- Install ----------------------------------------------------------------
+
+function Install-Dependencies {
+    if (!(Test-Path "$ProjectRoot\node_modules\.bin\concurrently.cmd")) {
+        Write-Host "  Installing concurrently..." -ForegroundColor Yellow
+        bun install --cwd "$ProjectRoot" 2>$null
+        Write-Host ""
     }
-    Write-Host ""
 }
 
-function Show-URLs {
+# --- Launch -----------------------------------------------------------------
+
+function Start-Services {
+    Install-Dependencies
+
+    Write-Host "  Press " -ForegroundColor DarkGray -NoNewline
+    Write-Host "Ctrl+C" -ForegroundColor White -NoNewline
+    Write-Host " to stop all services" -ForegroundColor DarkGray
     Write-Host ""
-    Write-Host "========================================" -ForegroundColor Green
-    Write-Host "  All services starting!" -ForegroundColor Green
-    Write-Host "========================================" -ForegroundColor Green
+    Write-Host "  --------------------------------------------------------" -ForegroundColor DarkGray
     Write-Host ""
-    Write-Host "  Laravel:     " -NoNewline; Write-Host "http://localhost:8000" -ForegroundColor Cyan
-    Write-Host "  ML Service:  " -NoNewline; Write-Host "http://localhost:8001" -ForegroundColor Cyan
-    Write-Host "  ML Docs:     " -NoNewline; Write-Host "http://localhost:8001/docs" -ForegroundColor Cyan
-    Write-Host "  Kafka UI:    " -NoNewline; Write-Host "http://localhost:8086" -ForegroundColor Cyan
-    Write-Host "  pgAdmin:     " -NoNewline; Write-Host "http://localhost:5050" -ForegroundColor Cyan
-    Write-Host ""
+
+    & "$ProjectRoot\node_modules\.bin\concurrently.cmd" `
+        --pad-prefix `
+        --kill-others-on-fail `
+        -p '[{name}]' `
+        -n 'NESTJS,NEXTJS,ML' `
+        -c 'red.bold,cyan.bold,magenta.bold' `
+        "cd nestjs-backend && bun run start:dev" `
+        "cd frontend && bun run dev" `
+        "cd ml-services && .venv\Scripts\python -m uvicorn main:app --reload --port=8001"
 }
 
-# Main execution
-Write-Header
+# --- Main -------------------------------------------------------------------
+
+Write-Banner
 
 if ($Stop) {
     Stop-AllServices
@@ -125,7 +184,7 @@ if ($Stop) {
 }
 
 if ($Status) {
-    Get-ServiceStatus
+    Show-Status
     exit 0
 }
 
@@ -133,6 +192,4 @@ if ($Infra) {
     Start-Infrastructure
 }
 
-Start-Laravel
-Start-MLService
-Show-URLs
+Start-Services

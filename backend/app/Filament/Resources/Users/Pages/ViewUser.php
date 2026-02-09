@@ -3,18 +3,33 @@
 namespace App\Filament\Resources\Users\Pages;
 
 use App\Filament\Resources\Users\UserResource;
+use App\Filament\Widgets\PersonalityDimensionsChart;
 use App\Services\MLServiceClient;
+use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Livewire;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
 
 class ViewUser extends ViewRecord
 {
     protected static string $resource = UserResource::class;
+
+    private const PERSONALITY_DESCRIPTIONS = [
+        'adventurous_premium' => 'Loves exploring new and premium products, making quick decisions with confidence.',
+        'cautious_value_seeker' => 'Carefully evaluates products for the best value, prioritizing quality ratings and deals.',
+        'loyal_enthusiast' => 'Sticks with brands they trust and engages deeply with favorite products.',
+        'bargain_hunter' => 'Always on the lookout for the best deals and discounts.',
+        'quality_focused' => 'Quality matters most — thoroughly researches before purchasing.',
+        'trend_follower' => 'Stays ahead of the curve, often among the first to try what\'s popular.',
+        'practical_shopper' => 'Takes a balanced approach, weighing value, quality, and practicality.',
+        'impulse_buyer' => 'Spontaneous and excited by new arrivals and limited-time offers.',
+    ];
 
     protected function getHeaderActions(): array
     {
@@ -26,71 +41,93 @@ class ViewUser extends ViewRecord
     public function infolist(Schema $schema): Schema
     {
         $personalityData = $this->getPersonalityData();
+        $traitsData = $this->getTraitsData();
 
         return $schema
             ->components([
-                Section::make('User Information')
-                    ->schema([
-                        Grid::make(3)
+                Tabs::make('User')
+                    ->tabs([
+                        Tabs\Tab::make('User Information')
+                            ->icon('heroicon-o-user')
                             ->schema([
-                                TextEntry::make('name')
-                                    ->label('Name')
-                                    ->weight(FontWeight::Bold),
-                                TextEntry::make('email')
-                                    ->label('Email')
-                                    ->icon('heroicon-o-envelope'),
-                                TextEntry::make('is_admin')
-                                    ->label('Role')
-                                    ->formatStateUsing(fn ($state) => $state ? 'Administrator' : 'Customer')
-                                    ->badge()
-                                    ->color(fn ($state) => $state ? 'danger' : 'gray'),
+                                Grid::make(3)
+                                    ->schema([
+                                        TextEntry::make('name')
+                                            ->label('Name')
+                                            ->weight(FontWeight::Bold),
+                                        TextEntry::make('email')
+                                            ->label('Email')
+                                            ->icon('heroicon-o-envelope'),
+                                        TextEntry::make('is_admin')
+                                            ->label('Role')
+                                            ->formatStateUsing(fn ($state) => $state ? 'Administrator' : 'Customer')
+                                            ->badge()
+                                            ->color(fn ($state) => $state ? 'danger' : 'gray'),
+                                    ]),
+                                Grid::make(2)
+                                    ->schema([
+                                        TextEntry::make('created_at')
+                                            ->label('Registered')
+                                            ->dateTime(),
+                                        TextEntry::make('updated_at')
+                                            ->label('Last Updated')
+                                            ->dateTime(),
+                                    ]),
                             ]),
-                        Grid::make(2)
-                            ->schema([
-                                TextEntry::make('created_at')
-                                    ->label('Registered')
-                                    ->dateTime(),
-                                TextEntry::make('updated_at')
-                                    ->label('Last Updated')
-                                    ->dateTime(),
-                            ]),
-                    ]),
 
-                Section::make('ML Personality Profile')
-                    ->description('AI-powered personality classification based on shopping behavior')
-                    ->icon('heroicon-o-sparkles')
-                    ->schema($this->getPersonalitySchema($personalityData))
-                    ->collapsible(),
-
-                Section::make('Activity Summary')
-                    ->schema([
-                        Grid::make(4)
+                        Tabs\Tab::make('Activity Summary')
+                            ->icon('heroicon-o-chart-bar')
                             ->schema([
-                                TextEntry::make('reviews_count')
-                                    ->label('Reviews')
-                                    ->state(fn ($record) => $record->reviews()->count())
-                                    ->icon('heroicon-o-star'),
-                                TextEntry::make('orders_count')
-                                    ->label('Orders')
-                                    ->state(fn ($record) => $record->orders()->count())
-                                    ->icon('heroicon-o-shopping-cart'),
-                                TextEntry::make('wishlist_count')
-                                    ->label('Wishlist Items')
-                                    ->state(fn ($record) => $record->wishlists()->count())
-                                    ->icon('heroicon-o-heart'),
-                                TextEntry::make('addresses_count')
-                                    ->label('Addresses')
-                                    ->state(fn ($record) => $record->addresses()->count())
-                                    ->icon('heroicon-o-map-pin'),
+                                Grid::make(4)
+                                    ->schema([
+                                        TextEntry::make('reviews_count')
+                                            ->label('Reviews')
+                                            ->state(fn ($record) => $record->reviews()->count())
+                                            ->icon('heroicon-o-star'),
+                                        TextEntry::make('orders_count')
+                                            ->label('Orders')
+                                            ->state(fn ($record) => $record->orders()->count())
+                                            ->icon('heroicon-o-shopping-cart'),
+                                        TextEntry::make('wishlist_count')
+                                            ->label('Wishlist Items')
+                                            ->state(fn ($record) => $record->wishlists()->count())
+                                            ->icon('heroicon-o-heart'),
+                                        TextEntry::make('addresses_count')
+                                            ->label('Addresses')
+                                            ->state(fn ($record) => $record->addresses()->count())
+                                            ->icon('heroicon-o-map-pin'),
+                                    ]),
                             ]),
+
+                        Tabs\Tab::make('ML Personality Profile')
+                            ->icon('heroicon-o-sparkles')
+                            ->schema([
+                                Section::make('Personality Overview')
+                                    ->description(
+                                        ! empty($personalityData['last_updated'])
+                                            ? 'Last calculated: '.date('M j, Y \a\t g:i A', strtotime($personalityData['last_updated']))
+                                            : 'AI-powered personality classification'
+                                    )
+                                    ->headerActions([
+                                        Action::make('refreshPersonality')
+                                            ->label('Refresh')
+                                            ->icon('heroicon-o-arrow-path')
+                                            ->color('primary')
+                                            ->iconButton()
+                                            ->action(function () {
+                                                app(MLServiceClient::class)->getUserPersonality($this->record->id, forceRecalculate: true);
+                                                $this->js('window.location.reload()');
+                                            }),
+                                    ])
+                                    ->schema($this->getPersonalitySchema($personalityData, $traitsData)),
+                            ]),
+
+                        Tabs\Tab::make('User Interactions')
+                            ->icon('heroicon-o-cursor-arrow-rays')
+                            ->schema($this->getInteractionSchema()),
                     ])
-                    ->collapsible(),
-
-                Section::make('User Interactions')
-                    ->description('Tracked user behavior from browsing and shopping activity')
-                    ->icon('heroicon-o-cursor-arrow-rays')
-                    ->schema($this->getInteractionSchema())
-                    ->collapsible(),
+                    ->persistTabInQueryString()
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -106,7 +143,18 @@ class ViewUser extends ViewRecord
         }
     }
 
-    protected function getPersonalitySchema(?array $personalityData): array
+    protected function getTraitsData(): ?array
+    {
+        try {
+            $mlClient = app(MLServiceClient::class);
+
+            return $mlClient->getUserPersonalityTraits($this->record->id);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    protected function getPersonalitySchema(?array $personalityData, ?array $traitsData): array
     {
         if (! $personalityData || ! isset($personalityData['personality_type'])) {
             return [
@@ -119,67 +167,111 @@ class ViewUser extends ViewRecord
         }
 
         $dimensions = $personalityData['dimensions'] ?? [];
+        $dataPoints = $personalityData['data_points'] ?? 0;
+        $personalityType = $personalityData['personality_type'];
 
-        return [
+        $schema = [
             Grid::make(3)
                 ->schema([
                     TextEntry::make('personality_type')
                         ->label('Personality Type')
-                        ->state($this->formatPersonalityType($personalityData['personality_type']))
+                        ->state($this->formatPersonalityType($personalityType))
                         ->badge()
-                        ->color($this->getPersonalityColor($personalityData['personality_type'])),
+                        ->color($this->getPersonalityColor($personalityType)),
                     TextEntry::make('confidence')
                         ->label('Confidence')
-                        ->state(number_format(($personalityData['confidence'] ?? 0) * 100, 1) . '%')
+                        ->state(number_format(($personalityData['confidence'] ?? 0) * 100, 1).'%')
                         ->icon('heroicon-o-chart-bar'),
                     TextEntry::make('interaction_count')
                         ->label('Data Points')
-                        ->state($personalityData['data_points'] ?? 'N/A')
+                        ->state($dataPoints.' ('.$this->getDataQualityLabel($dataPoints).')')
                         ->icon('heroicon-o-cursor-arrow-rays'),
                 ]),
 
-            Section::make('Personality Dimensions')
-                ->schema([
-                    Grid::make(5)
-                        ->schema([
-                            $this->makeDimensionEntry('Price Sensitivity', $dimensions['price_sensitivity'] ?? null, 'heroicon-o-currency-dollar'),
-                            $this->makeDimensionEntry('Exploration', $dimensions['exploration_tendency'] ?? null, 'heroicon-o-magnifying-glass'),
-                            $this->makeDimensionEntry('Sentiment', $dimensions['sentiment_tendency'] ?? null, 'heroicon-o-face-smile'),
-                            $this->makeDimensionEntry('Purchase Frequency', $dimensions['purchase_frequency'] ?? null, 'heroicon-o-shopping-bag'),
-                            $this->makeDimensionEntry('Decision Speed', $dimensions['decision_speed'] ?? null, 'heroicon-o-bolt'),
-                        ]),
-                ])
-                ->compact()
-                ->collapsible(),
+            TextEntry::make('personality_description')
+                ->label('Description')
+                ->state(self::PERSONALITY_DESCRIPTIONS[$personalityType] ?? 'Shopping personality is being analyzed.')
+                ->icon('heroicon-o-information-circle'),
         ];
+
+        // Shopping Traits
+        $traits = $traitsData['traits'] ?? [];
+        if (! empty($traits)) {
+            $schema[] = Section::make('Shopping Traits')
+                ->description('Behavioral characteristics derived from shopping patterns')
+                ->icon('heroicon-o-sparkles')
+                ->schema(
+                    collect($traits)->map(fn (string $trait, int $index) => TextEntry::make("trait_{$index}")
+                        ->hiddenLabel()
+                        ->state($trait)
+                        ->icon('heroicon-o-check-circle')
+                    )->toArray()
+                )
+                ->compact()
+                ->collapsible();
+        }
+
+        // Personality Dimensions
+        $schema[] = Section::make('Personality Dimensions')
+            ->description('Scored dimensions that define the personality classification')
+            ->icon('heroicon-o-chart-bar-square')
+            ->schema([
+                Livewire::make(PersonalityDimensionsChart::class),
+            ])
+            ->collapsible();
+
+        // Recommendation Impact
+        $impact = $traitsData['recommendations_impact'] ?? [];
+        if (! empty($impact)) {
+            $impactEntries = [];
+
+            if (! empty($impact['product_selection'])) {
+                $impactEntries[] = TextEntry::make('impact_products')
+                    ->label('Products')
+                    ->state($impact['product_selection'])
+                    ->icon('heroicon-o-shopping-bag');
+            }
+
+            if (! empty($impact['pricing'])) {
+                $impactEntries[] = TextEntry::make('impact_pricing')
+                    ->label('Pricing')
+                    ->state($impact['pricing'])
+                    ->icon('heroicon-o-currency-dollar');
+            }
+
+            if (! empty($impact['categories'])) {
+                $impactEntries[] = TextEntry::make('impact_categories')
+                    ->label('Categories')
+                    ->state($impact['categories'])
+                    ->icon('heroicon-o-tag');
+            }
+
+            if (! empty($impactEntries)) {
+                $schema[] = Section::make('Recommendation Impact')
+                    ->description('How this personality affects product recommendations')
+                    ->icon('heroicon-o-adjustments-horizontal')
+                    ->schema($impactEntries)
+                    ->compact()
+                    ->collapsible();
+            }
+        }
+
+        return $schema;
     }
 
-    protected function makeDimensionEntry(string $label, ?float $value, string $icon): TextEntry
+    protected function getDataQualityLabel(int $dataPoints): string
     {
-        $displayValue = $value !== null ? number_format($value, 2) : 'N/A';
-        $color = $this->getDimensionColor($value);
-
-        return TextEntry::make(strtolower(str_replace(' ', '_', $label)))
-            ->label($label)
-            ->state($displayValue)
-            ->icon($icon)
-            ->color($color);
-    }
-
-    protected function getDimensionColor(?float $value): string
-    {
-        if ($value === null) {
-            return 'gray';
+        if ($dataPoints >= 50) {
+            return 'Comprehensive';
+        }
+        if ($dataPoints >= 20) {
+            return 'Good';
+        }
+        if ($dataPoints >= 10) {
+            return 'Growing';
         }
 
-        if ($value >= 0.7) {
-            return 'success';
-        }
-        if ($value >= 0.4) {
-            return 'warning';
-        }
-
-        return 'danger';
+        return 'Limited';
     }
 
     protected function formatPersonalityType(string $type): string
@@ -217,14 +309,12 @@ class ViewUser extends ViewRecord
             ];
         }
 
-        // Get interaction counts by type
         $viewCount = $this->record->interactions()->where('interaction_type', 'view')->count();
         $clickCount = $this->record->interactions()->where('interaction_type', 'click')->count();
         $cartCount = $this->record->interactions()->where('interaction_type', 'add_to_cart')->count();
         $purchaseCount = $this->record->interactions()->where('interaction_type', 'purchase')->count();
         $wishlistCount = $this->record->interactions()->where('interaction_type', 'wishlist')->count();
 
-        // Get top categories from interactions
         $topCategories = $this->record->interactions()
             ->join('products', 'user_interactions.product_id', '=', 'products.id')
             ->join('categories', 'products.category_id', '=', 'categories.id')
@@ -235,7 +325,6 @@ class ViewUser extends ViewRecord
             ->pluck('count', 'name')
             ->toArray();
 
-        // Get recent interactions
         $recentInteractions = $this->record->interactions()
             ->with('product')
             ->orderByDesc('created_at')
@@ -273,7 +362,6 @@ class ViewUser extends ViewRecord
                 ]),
         ];
 
-        // Add top categories
         if (! empty($topCategories)) {
             $categoryText = collect($topCategories)
                 ->map(fn ($count, $name) => "{$name} ({$count})")
@@ -285,7 +373,6 @@ class ViewUser extends ViewRecord
                 ->icon('heroicon-o-folder');
         }
 
-        // Add recent activity section
         if ($recentInteractions->isNotEmpty()) {
             $schema[] = Section::make('Recent Activity')
                 ->schema(

@@ -19,7 +19,7 @@ export function CartItem({ item }: CartItemProps) {
   const primaryImage = item.product?.images?.find((img) => img.is_primary) || item.product?.images?.[0];
 
   return (
-    <div className="flex gap-4 py-4 border-b last:border-0">
+    <div className="flex gap-4 py-4 border-b last:border-0 hover:bg-accent/30 rounded-lg transition-colors px-2 -mx-2">
       <div className="relative w-20 h-20 flex-shrink-0 rounded-md overflow-hidden bg-muted">
         {primaryImage ? (
           <Image

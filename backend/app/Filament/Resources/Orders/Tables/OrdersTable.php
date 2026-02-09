@@ -3,10 +3,13 @@
 namespace App\Filament\Resources\Orders\Tables;
 
 use App\Enums\OrderStatus;
+use App\Models\Order;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -65,6 +68,36 @@ class OrdersTable
                     ->preload(),
             ])
             ->recordActions([
+                Action::make('change_status')
+                    ->label('Change Status')
+                    ->icon('heroicon-o-arrow-path')
+                    ->color('warning')
+                    ->form([
+                        Select::make('status')
+                            ->options(collect(OrderStatus::cases())->mapWithKeys(fn ($status) => [
+                                $status->value => $status->label(),
+                            ]))
+                            ->default(fn (Order $record): string => $record->status->value)
+                            ->required(),
+                    ])
+                    ->action(function (Order $record, array $data): void {
+                        $newStatus = OrderStatus::from($data['status']);
+                        $updates = ['status' => $newStatus];
+
+                        $timestampField = match ($newStatus) {
+                            OrderStatus::Confirmed => 'confirmed_at',
+                            OrderStatus::Shipped => 'shipped_at',
+                            OrderStatus::Delivered => 'delivered_at',
+                            OrderStatus::Cancelled => 'cancelled_at',
+                            default => null,
+                        };
+
+                        if ($timestampField && ! $record->{$timestampField}) {
+                            $updates[$timestampField] = now();
+                        }
+
+                        $record->update($updates);
+                    }),
                 ViewAction::make(),
                 EditAction::make(),
             ])

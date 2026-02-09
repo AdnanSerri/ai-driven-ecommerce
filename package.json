@@ -1,0 +1,10 @@
+{
+  "name": "project-2",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently --pad-prefix --kill-others-on-fail -p [{name}] -n NESTJS,NEXTJS,ML -c red.bold,cyan.bold,magenta.bold \"cd nestjs-backend && bun run start:dev\" \"cd frontend && bun run dev\" \"cd ml-services && .venv\\Scripts\\python -m uvicorn main:app --reload --port=8001\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

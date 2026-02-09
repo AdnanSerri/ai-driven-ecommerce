@@ -1,12 +1,12 @@
 import { Badge } from "@/components/ui/badge";
 
-const statusConfig: Record<string, { className: string; label: string }> = {
-  pending: { className: "bg-yellow-100 text-yellow-700", label: "Pending" },
-  confirmed: { className: "bg-blue-100 text-blue-700", label: "Confirmed" },
-  processing: { className: "bg-indigo-100 text-indigo-700", label: "Processing" },
-  shipped: { className: "bg-purple-100 text-purple-700", label: "Shipped" },
-  delivered: { className: "bg-green-100 text-green-700", label: "Delivered" },
-  cancelled: { className: "bg-red-100 text-red-700", label: "Cancelled" },
+const statusConfig: Record<string, { variant: "warning" | "info" | "default" | "success" | "destructive" | "secondary"; label: string }> = {
+  pending: { variant: "warning", label: "Pending" },
+  confirmed: { variant: "info", label: "Confirmed" },
+  processing: { variant: "info", label: "Processing" },
+  shipped: { variant: "default", label: "Shipped" },
+  delivered: { variant: "success", label: "Delivered" },
+  cancelled: { variant: "destructive", label: "Cancelled" },
 };
 
 interface OrderStatusBadgeProps {
@@ -14,9 +14,9 @@ interface OrderStatusBadgeProps {
 }
 
 export function OrderStatusBadge({ status }: OrderStatusBadgeProps) {
-  const config = statusConfig[status] || { className: "bg-gray-100 text-gray-700", label: status };
+  const config = statusConfig[status] || { variant: "secondary" as const, label: status };
   return (
-    <Badge variant="secondary" className={config.className}>
+    <Badge variant={config.variant}>
       {config.label}
     </Badge>
   );

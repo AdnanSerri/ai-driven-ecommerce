@@ -22,7 +22,7 @@ function TrendingProductCard({ product }: { product: TrendingProductItem }) {
     : null;
 
   return (
-    <Card className="group overflow-hidden transition-shadow hover:shadow-lg">
+    <Card className="group overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1 hover:border-primary/20">
       <Link href={`/products/${product.product_id}`}>
         <div className="relative aspect-square overflow-hidden bg-muted">
           {product.image_url ? (
@@ -40,7 +40,7 @@ function TrendingProductCard({ product }: { product: TrendingProductItem }) {
           )}
           {/* Trending badge */}
           <div className="absolute top-2 left-2">
-            <Badge variant="destructive" className="flex items-center gap-1">
+            <Badge variant="gradient" className="flex items-center gap-1">
               <Flame className="h-3 w-3" />
               Trending
             </Badge>
@@ -48,7 +48,7 @@ function TrendingProductCard({ product }: { product: TrendingProductItem }) {
           {/* Growth indicator */}
           {growthPercent !== null && growthPercent > 0 && (
             <div className="absolute top-2 right-2">
-              <Badge variant="secondary" className="flex items-center gap-1 bg-green-100 text-green-700">
+              <Badge variant="success" className="flex items-center gap-1">
                 <TrendingUp className="h-3 w-3" />
                 +{growthPercent}%
               </Badge>
@@ -70,7 +70,7 @@ function TrendingProductCard({ product }: { product: TrendingProductItem }) {
             ${formatPrice(product.price || 0)}
           </span>
           <span
-            className={`text-xs ${product.in_stock ? "text-green-600" : "text-red-500"}`}
+            className={`text-xs ${product.in_stock ? "text-success" : "text-destructive"}`}
           >
             {product.in_stock ? "In Stock" : "Out of Stock"}
           </span>
@@ -97,7 +97,7 @@ export function TrendingProducts({
     return (
       <section className="space-y-4">
         <div className="flex items-center gap-2">
-          <Flame className="h-5 w-5 text-orange-500" />
+          <Flame className="h-5 w-5 text-warning" />
           <h2 className="text-xl font-bold">{title}</h2>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -122,7 +122,7 @@ export function TrendingProducts({
   return (
     <section className="space-y-4">
       <div className="flex items-center gap-2">
-        <Flame className="h-5 w-5 text-orange-500" />
+        <Flame className="h-5 w-5 text-warning" />
         <h2 className="text-xl font-bold">{title}</h2>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

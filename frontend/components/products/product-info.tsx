@@ -62,7 +62,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
       </div>
 
       <div className="flex items-baseline gap-3">
-        <span className="text-3xl font-bold">${formatPrice(product.price)}</span>
+        <span className="text-3xl font-bold gradient-primary-text">${formatPrice(product.price)}</span>
         {product.compare_at_price && Number(product.compare_at_price) > Number(product.price) && (
           <span className="text-lg text-muted-foreground line-through">
             ${formatPrice(product.compare_at_price)}
@@ -103,8 +103,9 @@ export function ProductInfo({ product }: ProductInfoProps) {
         </div>
 
         <Button
+          variant="gradient"
           size="lg"
-          className="flex-1"
+          className="flex-1 rounded-full"
           disabled={product.stock_quantity <= 0 || addToCart.isPending || !token}
           onClick={handleAddToCart}
         >
@@ -118,7 +119,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
             variant="outline"
             onClick={handleWishlist}
             disabled={toggleWishlist.isPending}
-            className={isInWishlist ? "text-red-500 border-red-500 hover:text-red-600 hover:border-red-600" : ""}
+            className={isInWishlist ? "text-destructive border-destructive hover:text-destructive hover:border-destructive" : ""}
           >
             <Heart className={`h-5 w-5 ${isInWishlist ? "fill-current" : ""}`} />
           </Button>

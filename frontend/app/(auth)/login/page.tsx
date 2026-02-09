@@ -20,10 +20,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-[80vh] items-center justify-center px-4">
-      <Card className="w-full max-w-md">
+    <div className="flex min-h-[80vh] items-center justify-center px-4 mesh-gradient">
+      <Card className="w-full max-w-md shadow-xl shadow-primary/5 border-primary/10">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Welcome back</CardTitle>
+          <CardTitle className="text-2xl gradient-primary-text">Welcome back</CardTitle>
           <CardDescription>Sign in to your account</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
@@ -51,8 +51,8 @@ export default function LoginPage() {
               />
             </div>
           </CardContent>
-          <CardFooter className="flex flex-col gap-3">
-            <Button type="submit" className="w-full" disabled={login.isPending}>
+          <CardFooter className="flex flex-col gap-3 mt-5">
+            <Button type="submit" variant="gradient" className="w-full rounded-full" disabled={login.isPending}>
               {login.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Sign In
             </Button>

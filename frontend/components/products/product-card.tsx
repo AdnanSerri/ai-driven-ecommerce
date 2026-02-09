@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { StarRating } from "@/components/products/star-rating";
 import { StockBadge } from "@/components/products/stock-badge";
 import { useAddToCart } from "@/hooks/use-cart";
@@ -34,7 +35,7 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <Card className="group overflow-hidden transition-shadow hover:shadow-lg">
+    <Card className="group overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1 hover:border-primary/20">
       <Link href={`/products/${product.id}`} onClick={handleClick}>
         <div className="relative aspect-square overflow-hidden bg-muted">
           {primaryImage ? (
@@ -51,8 +52,10 @@ export function ProductCard({ product }: ProductCardProps) {
             </div>
           )}
           {product.compare_at_price && Number(product.compare_at_price) > Number(product.price) && (
-            <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-md font-medium">
-              -{Math.round(((Number(product.compare_at_price) - Number(product.price)) / Number(product.compare_at_price)) * 100)}%
+            <div className="absolute top-2 left-2">
+              <Badge variant="destructive" className="rounded-full">
+                -{Math.round(((Number(product.compare_at_price) - Number(product.price)) / Number(product.compare_at_price)) * 100)}%
+              </Badge>
             </div>
           )}
         </div>
@@ -84,7 +87,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="flex gap-2 pt-2">
           <Button
             size="sm"
-            className="flex-1"
+            className="flex-1 rounded-full"
             disabled={product.stock_quantity <= 0 || addToCart.isPending || !token}
             onClick={() => addToCart.mutate({ product_id: product.id, quantity: 1 })}
           >
@@ -97,7 +100,7 @@ export function ProductCard({ product }: ProductCardProps) {
               variant="outline"
               onClick={() => toggleWishlist.mutate(product.id)}
               disabled={toggleWishlist.isPending}
-              className={isInWishlist ? "text-red-500 border-red-500 hover:text-red-600 hover:border-red-600" : ""}
+              className={isInWishlist ? "text-destructive border-destructive hover:text-destructive hover:border-destructive" : ""}
             >
               <Heart className={`h-4 w-4 ${isInWishlist ? "fill-current" : ""}`} />
             </Button>

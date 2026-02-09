@@ -35,7 +35,7 @@ function SimilarProductCard({
   showDismiss: boolean;
 }) {
   return (
-    <Card className="group overflow-hidden transition-shadow hover:shadow-lg relative">
+    <Card className="group overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1 hover:border-primary/20 relative">
       {/* Dismiss button */}
       {showDismiss && onDismiss && (
         <div className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -91,7 +91,7 @@ function SimilarProductCard({
         )}
         <div className="flex items-center justify-between">
           <span className="font-bold text-lg">${formatPrice(product.price)}</span>
-          <span className={`text-xs ${product.in_stock ? "text-green-600" : "text-red-500"}`}>
+          <span className={`text-xs ${product.in_stock ? "text-success" : "text-destructive"}`}>
             {product.in_stock ? "In Stock" : "Out of Stock"}
           </span>
         </div>

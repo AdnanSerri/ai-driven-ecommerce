@@ -67,6 +67,7 @@ export default function CategoryPage({ params }: { params: Promise<{ id: string 
           <Button
             variant="outline"
             size="sm"
+            className="rounded-full"
             disabled={data.current_page <= 1}
             onClick={() => setFilters((prev) => ({ ...prev, page: (prev.page || 1) - 1 }))}
           >
@@ -79,6 +80,7 @@ export default function CategoryPage({ params }: { params: Promise<{ id: string 
           <Button
             variant="outline"
             size="sm"
+            className="rounded-full"
             disabled={data.current_page >= data.last_page}
             onClick={() => setFilters((prev) => ({ ...prev, page: (prev.page || 1) + 1 }))}
           >

@@ -9,7 +9,7 @@ use Filament\Actions\EditAction;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
 
@@ -32,83 +32,83 @@ class ViewProduct extends ViewRecord
 
         return $schema
             ->components([
-                Section::make('Product Information')
-                    ->schema([
-                        Grid::make(3)
+                Tabs::make('Product')
+                    ->tabs([
+                        Tabs\Tab::make('Product Information')
+                            ->icon('heroicon-o-information-circle')
                             ->schema([
-                                TextEntry::make('name')
-                                    ->label('Product Name')
-                                    ->weight(FontWeight::Bold),
-                                TextEntry::make('category.name')
-                                    ->label('Category')
-                                    ->badge(),
-                                TextEntry::make('price')
-                                    ->label('Price')
-                                    ->money('USD'),
+                                Grid::make(3)
+                                    ->schema([
+                                        TextEntry::make('name')
+                                            ->label('Product Name')
+                                            ->weight(FontWeight::Bold),
+                                        TextEntry::make('category.name')
+                                            ->label('Category')
+                                            ->badge(),
+                                        TextEntry::make('price')
+                                            ->label('Price')
+                                            ->money('USD'),
+                                    ]),
+                                Grid::make(3)
+                                    ->schema([
+                                        TextEntry::make('stock')
+                                            ->label('Stock')
+                                            ->badge()
+                                            ->color(fn ($record) => match (true) {
+                                                ! $record->track_stock => 'gray',
+                                                $record->stock <= 0 => 'danger',
+                                                $record->stock <= $record->low_stock_threshold => 'warning',
+                                                default => 'success',
+                                            }),
+                                        TextEntry::make('track_stock')
+                                            ->label('Track Stock')
+                                            ->formatStateUsing(fn ($state) => $state ? 'Yes' : 'No'),
+                                        TextEntry::make('low_stock_threshold')
+                                            ->label('Low Stock Threshold'),
+                                    ]),
+                                TextEntry::make('description')
+                                    ->label('Description')
+                                    ->columnSpanFull(),
                             ]),
-                        Grid::make(3)
-                            ->schema([
-                                TextEntry::make('stock')
-                                    ->label('Stock')
-                                    ->badge()
-                                    ->color(fn ($record) => match (true) {
-                                        ! $record->track_stock => 'gray',
-                                        $record->stock <= 0 => 'danger',
-                                        $record->stock <= $record->low_stock_threshold => 'warning',
-                                        default => 'success',
-                                    }),
-                                TextEntry::make('track_stock')
-                                    ->label('Track Stock')
-                                    ->formatStateUsing(fn ($state) => $state ? 'Yes' : 'No'),
-                                TextEntry::make('low_stock_threshold')
-                                    ->label('Low Stock Threshold'),
-                            ]),
-                        TextEntry::make('description')
-                            ->label('Description')
-                            ->columnSpanFull(),
-                    ]),
 
-                Section::make('Performance Metrics')
-                    ->schema([
-                        Grid::make(4)
+                        Tabs\Tab::make('Performance Metrics')
+                            ->icon('heroicon-o-chart-bar')
                             ->schema([
-                                TextEntry::make('total_sold')
-                                    ->label('Total Sold')
-                                    ->state(fn ($record) => $record->orderItems()->sum('quantity'))
-                                    ->icon('heroicon-o-shopping-cart'),
-                                TextEntry::make('reviews_count')
-                                    ->label('Total Reviews')
-                                    ->state(fn ($record) => $record->reviews()->count())
-                                    ->icon('heroicon-o-star'),
-                                TextEntry::make('avg_rating')
-                                    ->label('Average Rating')
-                                    ->state(fn ($record) => number_format($record->reviews()->avg('rating') ?? 0, 1) . '/5')
-                                    ->icon('heroicon-o-star'),
-                                TextEntry::make('wishlist_count')
-                                    ->label('Wishlisted')
-                                    ->state(fn ($record) => $record->wishlists()->count())
-                                    ->icon('heroicon-o-heart'),
+                                Grid::make(4)
+                                    ->schema([
+                                        TextEntry::make('total_sold')
+                                            ->label('Total Sold')
+                                            ->state(fn ($record) => $record->orderItems()->sum('quantity'))
+                                            ->icon('heroicon-o-shopping-cart'),
+                                        TextEntry::make('reviews_count')
+                                            ->label('Total Reviews')
+                                            ->state(fn ($record) => $record->reviews()->count())
+                                            ->icon('heroicon-o-star'),
+                                        TextEntry::make('avg_rating')
+                                            ->label('Average Rating')
+                                            ->state(fn ($record) => number_format($record->reviews()->avg('rating') ?? 0, 1).'/5')
+                                            ->icon('heroicon-o-star'),
+                                        TextEntry::make('wishlist_count')
+                                            ->label('Wishlisted')
+                                            ->state(fn ($record) => $record->wishlists()->count())
+                                            ->icon('heroicon-o-heart'),
+                                    ]),
                             ]),
+
+                        Tabs\Tab::make('Sentiment Analysis')
+                            ->icon('heroicon-o-face-smile')
+                            ->schema($this->getSentimentSchema($sentimentData)),
+
+                        Tabs\Tab::make('Similar Products')
+                            ->icon('heroicon-o-sparkles')
+                            ->schema($this->getSimilarProductsSchema($similarProducts)),
+
+                        Tabs\Tab::make('Frequently Bought Together')
+                            ->icon('heroicon-o-shopping-bag')
+                            ->schema($this->getBoughtTogetherSchema($boughtTogether)),
                     ])
-                    ->collapsible(),
-
-                Section::make('Sentiment Analysis')
-                    ->description('AI-powered analysis of customer review sentiment')
-                    ->icon('heroicon-o-face-smile')
-                    ->schema($this->getSentimentSchema($sentimentData))
-                    ->collapsible(),
-
-                Section::make('Similar Products')
-                    ->description('Products identified as similar by the ML recommendation engine')
-                    ->icon('heroicon-o-sparkles')
-                    ->schema($this->getSimilarProductsSchema($similarProducts))
-                    ->collapsible(),
-
-                Section::make('Frequently Bought Together')
-                    ->description('Products that customers often purchase with this item')
-                    ->icon('heroicon-o-shopping-bag')
-                    ->schema($this->getBoughtTogetherSchema($boughtTogether))
-                    ->collapsible(),
+                    ->persistTabInQueryString()
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -161,22 +161,22 @@ class ViewProduct extends ViewRecord
                 ->schema([
                     TextEntry::make('positive_reviews')
                         ->label('Positive')
-                        ->state($data['positive'] . ' (' . $data['positive_percent'] . '%)')
+                        ->state($data['positive'].' ('.$data['positive_percent'].'%)')
                         ->icon('heroicon-o-face-smile')
                         ->color('success'),
                     TextEntry::make('neutral_reviews')
                         ->label('Neutral')
-                        ->state($data['neutral'] . ' (' . $data['neutral_percent'] . '%)')
+                        ->state($data['neutral'].' ('.$data['neutral_percent'].'%)')
                         ->icon('heroicon-o-minus-circle')
                         ->color('gray'),
                     TextEntry::make('negative_reviews')
                         ->label('Negative')
-                        ->state($data['negative'] . ' (' . $data['negative_percent'] . '%)')
+                        ->state($data['negative'].' ('.$data['negative_percent'].'%)')
                         ->icon('heroicon-o-face-frown')
                         ->color('danger'),
                     TextEntry::make('avg_confidence')
                         ->label('Avg Confidence')
-                        ->state(number_format($data['avg_confidence'] * 100, 1) . '%')
+                        ->state(number_format($data['avg_confidence'] * 100, 1).'%')
                         ->icon('heroicon-o-chart-bar')
                         ->color('info'),
                 ]),
@@ -269,10 +269,10 @@ class ViewProduct extends ViewRecord
                         ->badge(),
                     TextEntry::make("similar_{$index}_price")
                         ->label('Price')
-                        ->state('$' . number_format($product['price'], 2)),
+                        ->state('$'.number_format($product['price'], 2)),
                     TextEntry::make("similar_{$index}_score")
                         ->label('Similarity')
-                        ->state(number_format($product['score'] * 100, 1) . '%')
+                        ->state(number_format($product['score'] * 100, 1).'%')
                         ->badge()
                         ->color(fn () => $product['score'] >= 0.8 ? 'success' : ($product['score'] >= 0.5 ? 'warning' : 'gray')),
                 ]);
@@ -339,10 +339,10 @@ class ViewProduct extends ViewRecord
                         ->badge(),
                     TextEntry::make("bought_{$index}_price")
                         ->label('Price')
-                        ->state('$' . number_format($product['price'], 2)),
+                        ->state('$'.number_format($product['price'], 2)),
                     TextEntry::make("bought_{$index}_count")
                         ->label('Co-purchases')
-                        ->state($product['co_purchase_count'] . ' times')
+                        ->state($product['co_purchase_count'].' times')
                         ->icon('heroicon-o-shopping-cart')
                         ->color('success'),
                 ]);

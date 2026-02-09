@@ -15,7 +15,7 @@ export function ProductImages({ images, productName }: ProductImagesProps) {
 
   if (!images || images.length === 0) {
     return (
-      <div className="aspect-square bg-muted rounded-lg flex items-center justify-center text-muted-foreground">
+      <div className="aspect-square bg-muted rounded-xl flex items-center justify-center text-muted-foreground">
         No Image Available
       </div>
     );
@@ -26,7 +26,7 @@ export function ProductImages({ images, productName }: ProductImagesProps) {
 
   return (
     <div className="space-y-3">
-      <div className="relative aspect-square overflow-hidden rounded-lg bg-muted">
+      <div className="relative aspect-square overflow-hidden rounded-xl bg-muted shadow-sm">
         <Image
           src={proxyImageUrl(selected.url)}
           alt={selected.alt_text || productName}

@@ -1,0 +1,195 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../../../app/Filament/**/*.php';
+@source '../../../../vendor/filament/**/*.blade.php';
+
+/*
+ * ShopAI Admin Theme
+ * Bold & Vibrant indigo design system matching the Next.js frontend
+ *
+ * Primary palette (OKLch hue 275 → indigo/violet):
+ *   Light primary: oklch(0.50 0.24 275) ≈ #634CE9
+ *   Dark primary:  oklch(0.70 0.22 275) ≈ #8178F6
+ *
+ * Gradient: indigo → violet → fuchsia
+ *   Start: #634CE9  Mid: #6D42E0  End: #8B42D2
+ */
+
+/* ─── Login / Simple layout ─── */
+.fi-simple-layout {
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 40%, rgba(99, 76, 233, 0.06), transparent),
+    radial-gradient(ellipse 60% 60% at 80% 20%, rgba(109, 66, 224, 0.04), transparent),
+    radial-gradient(ellipse 50% 80% at 50% 80%, rgba(139, 66, 210, 0.03), transparent);
+}
+
+:is(.dark) .fi-simple-layout {
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 40%, rgba(99, 76, 233, 0.15), transparent),
+    radial-gradient(ellipse 60% 60% at 80% 20%, rgba(109, 66, 224, 0.10), transparent),
+    radial-gradient(ellipse 50% 80% at 50% 80%, rgba(139, 66, 210, 0.07), transparent);
+}
+
+/* Login card glow */
+.fi-simple-main-ctn {
+  filter: drop-shadow(0 0 40px rgba(99, 76, 233, 0.08));
+}
+
+:is(.dark) .fi-simple-main-ctn {
+  filter: drop-shadow(0 0 50px rgba(129, 120, 246, 0.12));
+}
+
+/* ─── Topbar gradient accent line ─── */
+.fi-topbar {
+  position: relative;
+  backdrop-filter: blur(12px);
+}
+
+.fi-topbar::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgb(99, 76, 233), rgb(109, 66, 224), rgb(139, 66, 210));
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+:is(.dark) .fi-topbar::after {
+  opacity: 0.5;
+}
+
+/* ─── Sidebar ─── */
+.fi-sidebar {
+  border-right-color: rgba(99, 76, 233, 0.08) !important;
+}
+
+:is(.dark) .fi-sidebar {
+  border-right-color: rgba(129, 120, 246, 0.1) !important;
+}
+
+/* Active nav item glow */
+.fi-sidebar-item-active {
+  position: relative;
+}
+
+.fi-sidebar-item-active::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 12px -3px rgba(99, 76, 233, 0.15);
+  pointer-events: none;
+}
+
+:is(.dark) .fi-sidebar-item-active::before {
+  box-shadow: 0 0 12px -3px rgba(129, 120, 246, 0.2);
+}
+
+/* Sidebar nav transitions */
+.fi-sidebar-item {
+  transition: all 0.2s ease;
+}
+
+.fi-sidebar-item-button {
+  transition: all 0.2s ease;
+}
+
+/* ─── Stat cards ─── */
+.fi-wi-stats-overview-stat {
+  transition: all 0.3s ease;
+}
+
+.fi-wi-stats-overview-stat:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px -5px rgba(99, 76, 233, 0.12);
+}
+
+:is(.dark) .fi-wi-stats-overview-stat:hover {
+  box-shadow: 0 8px 25px -5px rgba(129, 120, 246, 0.18);
+}
+
+/* ─── Tables ─── */
+.fi-ta-row {
+  transition: background-color 0.15s ease;
+}
+
+/* ─── Badges ─── */
+.fi-badge {
+  transition: all 0.2s ease;
+}
+
+/* ─── Buttons ─── */
+.fi-btn {
+  transition: all 0.2s ease;
+}
+
+.fi-btn:active {
+  transform: scale(0.98);
+}
+
+/* ─── Cards / Sections ─── */
+.fi-section {
+  transition: box-shadow 0.3s ease;
+}
+
+.fi-section:hover {
+  box-shadow: 0 4px 15px -3px rgba(99, 76, 233, 0.06);
+}
+
+:is(.dark) .fi-section:hover {
+  box-shadow: 0 4px 15px -3px rgba(129, 120, 246, 0.08);
+}
+
+/* ─── Modal ─── */
+.fi-modal-close-overlay {
+  backdrop-filter: blur(4px);
+}
+
+/* ─── Chart widgets ─── */
+.fi-wi-chart {
+  transition: all 0.3s ease;
+}
+
+.fi-wi-chart:hover {
+  box-shadow: 0 4px 15px -3px rgba(99, 76, 233, 0.08);
+}
+
+:is(.dark) .fi-wi-chart:hover {
+  box-shadow: 0 4px 15px -3px rgba(129, 120, 246, 0.1);
+}
+
+/* ─── Header gradient text utility ─── */
+.fi-header-heading {
+  background: linear-gradient(135deg, rgb(99, 76, 233), rgb(109, 66, 224), rgb(139, 66, 210));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+:is(.dark) .fi-header-heading {
+  background: linear-gradient(135deg, rgb(129, 120, 246), rgb(139, 110, 240), rgb(169, 110, 226));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Reduced motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  .fi-wi-stats-overview-stat,
+  .fi-sidebar-item,
+  .fi-sidebar-item-button,
+  .fi-btn,
+  .fi-badge,
+  .fi-ta-row,
+  .fi-section,
+  .fi-wi-chart {
+    transition: none !important;
+  }
+
+  .fi-wi-stats-overview-stat:hover {
+    transform: none;
+  }
+}

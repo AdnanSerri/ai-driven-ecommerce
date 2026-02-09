@@ -37,6 +37,9 @@ RUN composer install --no-scripts --no-autoloader --prefer-dist
 # Copy the rest of the application
 COPY . .
 
+# Install chokidar locally for Octane --watch
+RUN npm init -y && npm install chokidar
+
 # Generate autoloader
 RUN composer dump-autoload --optimize
 

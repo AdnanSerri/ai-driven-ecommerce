@@ -61,7 +61,7 @@ export function ReviewList({ productId }: ReviewListProps) {
           {review.title && <p className="font-medium text-sm">{review.title}</p>}
           <p className="text-sm text-muted-foreground">{review.comment}</p>
           {review.is_verified_purchase && (
-            <p className="text-xs text-green-600 font-medium">Verified Purchase</p>
+            <p className="text-xs text-success font-medium">Verified Purchase</p>
           )}
         </div>
       ))}
